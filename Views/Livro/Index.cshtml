@@ -1,0 +1,283 @@
+﻿@model List<Biblioteca.Models.Livro>
+@using Biblioteca.Models
+
+@{
+    ViewData["Title"] = "Todos os livros";
+
+    var categoriasPrincipais = ViewBag.CategoriasPrincipais as List<Categoria>
+        ?? new List<Categoria>();
+
+    var subcategorias = ViewBag.Subcategorias as List<Categoria>
+        ?? new List<Categoria>();
+
+    var livrosFavoritos = ViewBag.LivrosFavoritos as HashSet<int>
+        ?? new HashSet<int>();
+
+    int? categoriaSelecionada = ViewBag.CategoriaId;
+    int? subcategoriaSelecionada = ViewBag.SubcategoriaId;
+
+    string termo = ViewBag.Termo as string ?? "";
+}
+
+<section class="secao-todos-livros">
+    <div class="container">
+
+        <div class="secao-titulo">
+            <h2>Todos os livros</h2>
+            <p>Explore nossa biblioteca e encontre sua próxima aventura literária.</p>
+        </div>
+
+        <!-- FILTROS -->
+        <form asp-controller="Livro"
+              asp-action="Index"
+              method="get"
+              class="filtros-todos-livros">
+
+            <div class="campo-filtro campo-pesquisa">
+                <label for="termo">Buscar livro ou autor</label>
+                <input type="text"
+                       id="termo"
+                       name="termo"
+                       value="@termo"
+                       placeholder="Digite o título ou nome do autor..." />
+            </div>
+
+            <div class="campo-filtro">
+                <label for="categoriaId">Categoria principal</label>
+                <select id="categoriaId" name="categoriaId">
+                    <option value="">Todas as categorias</option>
+
+                    @foreach (var categoria in categoriasPrincipais)
+                    {
+                        <option value="@categoria.Id"
+                                selected="@(categoriaSelecionada == categoria.Id)">
+                            @categoria.Nome
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="campo-filtro">
+                <label for="subcategoriaId">Subcategoria</label>
+                <select id="subcategoriaId" name="subcategoriaId">
+                    <option value="">Todas as subcategorias</option>
+
+                    @foreach (var subcategoria in subcategorias)
+                    {
+                        <option value="@subcategoria.Id"
+                                data-pai="@subcategoria.CategoriaPaiId"
+                                selected="@(subcategoriaSelecionada == subcategoria.Id)">
+                            @subcategoria.Nome
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="botoes-filtros">
+                <button type="submit" class="botao-filtrar-livros">
+                    <i class="bi bi-search"></i>
+                    Buscar
+                </button>
+
+                <a asp-controller="Livro"
+                   asp-action="Index"
+                   class="botao-limpar-filtros">
+                    Limpar filtros
+                </a>
+            </div>
+        </form>
+
+        <!-- QUANTIDADE DE LIVROS -->
+        <div class="resultado-livros">
+            <span>
+                <i class="bi bi-book-half"></i>
+                @Model.Count livro(s) encontrado(s)
+            </span>
+        </div>
+
+        @if (Model.Any())
+        {
+            <div class="lista-todos-livros">
+
+                @foreach (var livro in Model)
+                {
+                    <article class="livro-todos-card">
+
+                        <!-- CAPA -->
+                        <div class="livro-todos-capa">
+
+                            @if (!string.IsNullOrWhiteSpace(livro.Imagem))
+                            {
+                                <img src="@Url.Content(
+                                    livro.Imagem.StartsWith("/")
+                                        ? livro.Imagem
+                                        : "~/" + livro.Imagem.TrimStart('~', '/'))"
+                                     alt="Capa do livro @livro.Titulo"
+                                     loading="lazy" />
+                            }
+                            else
+                            {
+                                <div class="livro-todos-sem-capa">
+                                    <i class="bi bi-book"></i>
+                                    <span>Sem capa disponível</span>
+                                </div>
+                            }
+
+                            @if (livro.Destaque)
+                            {
+                                <span class="selo-destaque">
+                                    <i class="bi bi-stars"></i>
+                                    Destaque
+                                </span>
+                            }
+                        </div>
+
+                        <!-- INFORMAÇÕES -->
+                        <div class="livro-todos-info">
+
+                            <h3 title="@livro.Titulo">
+                                @livro.Titulo
+                            </h3>
+
+                            <p class="livro-todos-autor">
+                                <i class="bi bi-person"></i>
+
+                                @if (livro.LivrosAutores != null &&
+                                    livro.LivrosAutores.Any(la => la.Autor != null))
+                                {
+                                    @string.Join(", ",
+                                        livro.LivrosAutores
+                                            .Where(la => la.Autor != null)
+                                            .Select(la => la.Autor!.Nome))
+                                }
+                                else
+                                {
+                                    <span>Autor não informado</span>
+                                }
+                            </p>
+
+                            @if (livro.Categoria != null)
+                            {
+                                <span class="livro-todos-categoria">
+                                    @livro.Categoria.Nome
+                                </span>
+                            }
+
+                            <div class="livro-todos-detalhes">
+                                <span>
+                                    <i class="bi bi-calendar3"></i>
+                                    @livro.AnoPublicacao
+                                </span>
+
+                                <span>
+                                    <i class="bi bi-journal-bookmark"></i>
+                                    @(livro.Exemplares?.Count(e =>
+                                        e.Status == StatusExemplar.Disponivel) ?? 0)
+                                    disponível(is)
+                                </span>
+                            </div>
+
+                            <div class="livro-todos-acoes">
+
+                                <a asp-controller="Livro"
+                                   asp-action="Details"
+                                   asp-route-id="@livro.Id"
+                                   class="livro-todos-link">
+                                    Ver detalhes
+                                    <i class="bi bi-arrow-right"></i>
+                                </a>
+
+                                @if (User.Identity?.IsAuthenticated == true)
+                                {
+                                    <form asp-controller="Livro"
+                                          asp-action="Favoritar"
+                                          method="post"
+                                          class="form-favoritar-catalogo">
+
+                                        <input type="hidden"
+                                               name="livroId"
+                                               value="@livro.Id" />
+
+                                        <button type="submit"
+                                                class="livro-todos-favorito @(livrosFavoritos.Contains(livro.Id) ? "favoritado" : "")"
+                                                title="@(livrosFavoritos.Contains(livro.Id) ? "Remover dos favoritos" : "Adicionar aos favoritos")"
+                                                aria-label="@(livrosFavoritos.Contains(livro.Id) ? "Remover dos favoritos" : "Adicionar aos favoritos")">
+
+                                            <i class="bi @(livrosFavoritos.Contains(livro.Id) ? "bi-heart-fill" : "bi-heart")"></i>
+                                        </button>
+                                    </form>
+                                }
+
+                            </div>
+                        </div>
+                    </article>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="livros-sem-resultados">
+                <i class="bi bi-book"></i>
+                <h3>Nenhum livro encontrado</h3>
+                <p>
+                    Não encontramos livros com esses filtros.
+                    Tente buscar por outro título, autor ou categoria.
+                </p>
+
+                <a asp-controller="Livro"
+                   asp-action="Index"
+                   class="botao-filtrar-livros">
+                    Ver todos os livros
+                </a>
+            </div>
+        }
+
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const categoriaSelect = document.getElementById("categoriaId");
+            const subcategoriaSelect = document.getElementById("subcategoriaId");
+
+            if (!categoriaSelect || !subcategoriaSelect) {
+                return;
+            }
+
+            const subcategorias = Array.from(
+                subcategoriaSelect.querySelectorAll("option[data-pai]")
+            );
+
+            function filtrarSubcategorias() {
+                const categoriaId = categoriaSelect.value;
+                const subcategoriaAtual = subcategoriaSelect.value;
+
+                subcategorias.forEach(function (opcao) {
+                    const pertenceCategoria =
+                        categoriaId === "" ||
+                        opcao.dataset.pai === categoriaId;
+
+                    opcao.hidden = !pertenceCategoria;
+                    opcao.disabled = !pertenceCategoria;
+                });
+
+                const selecionada = subcategorias.find(function (opcao) {
+                    return opcao.value === subcategoriaAtual;
+                });
+
+                if (selecionada && selecionada.disabled) {
+                    subcategoriaSelect.value = "";
+                }
+            }
+
+            categoriaSelect.addEventListener("change", function () {
+                subcategoriaSelect.value = "";
+                filtrarSubcategorias();
+            });
+
+            filtrarSubcategorias();
+        });
+    </script>
+}

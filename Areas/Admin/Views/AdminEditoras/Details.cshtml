@@ -1,0 +1,72 @@
+@model Biblioteca.Models.Editora
+
+@{
+    ViewData["Title"] = "Detalhes da editora";
+}
+
+<div class="admin-dashboard">
+
+    <div class="admin-cabecalho mb-4">
+        <div>
+            <h1>Detalhes da editora</h1>
+        </div>
+
+        <div class="admin-cabecalho-icone">
+            <i class="bi bi-building"></i>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+
+            <dl class="row mb-0">
+
+                <dt class="col-sm-3 mb-2">Nome</dt>
+                <dd class="col-sm-9 mb-3">
+                    @Model.Nome
+                </dd>
+
+                <dt class="col-sm-3 mb-2">CNPJ</dt>
+                <dd class="col-sm-9 mb-3">
+                    @(string.IsNullOrWhiteSpace(Model.CNPJ)
+                        ? "Não informado"
+                        : Model.CNPJ)
+                </dd>
+
+                <dt class="col-sm-3 mb-2">Cidade</dt>
+                <dd class="col-sm-9 mb-3">
+                    @(string.IsNullOrWhiteSpace(Model.Cidade)
+                        ? "Não informada"
+                        : Model.Cidade)
+                </dd>
+
+                <dt class="col-sm-3 mb-2">Estado</dt>
+                <dd class="col-sm-9 mb-3">
+                    @(string.IsNullOrWhiteSpace(Model.Estado)
+                        ? "Não informado"
+                        : Model.Estado)
+                </dd>
+
+            </dl>
+
+            <div class="d-flex flex-wrap gap-2 mt-3">
+
+                <a asp-action="Edit"
+                   asp-route-id="@Model.Id"
+                   class="btn btn-success">
+                    <i class="bi bi-pencil-square me-1"></i>
+                    Editar
+                </a>
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>
+                    Voltar
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>

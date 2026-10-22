@@ -1,0 +1,229 @@
+@model IEnumerable<Biblioteca.Models.Editora>
+
+@{
+    ViewData["Title"] = "Editoras";
+    var editoras = Model?.ToList() ?? new List<Biblioteca.Models.Editora>();
+}
+
+<div class="admin-dashboard admin-editoras">
+
+    <!-- CABEÇALHO -->
+    <div class="admin-cabecalho d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="mb-1">Editoras</h1>
+            <p class="text-muted mb-0">
+                Gerencie as editoras responsáveis pelas publicações do acervo.
+            </p>
+        </div>
+
+        <a asp-action="Create" class="btn btn-success">
+            <i class="bi bi-plus-circle me-1"></i>
+            Nova editora
+        </a>
+    </div>
+
+    <!-- RESUMO -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <div>
+            <h2 class="h5 mb-1">Lista de editoras</h2>
+            <p class="text-muted mb-0">
+                Consulte e atualize os dados cadastrais.
+            </p>
+        </div>
+
+        <span class="text-muted small">
+            <i class="bi bi-building me-1"></i>
+            Total: <strong>@editoras.Count</strong>
+        </span>
+    </div>
+
+    <!-- LISTAGEM -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+
+            @if (editoras.Any())
+            {
+                <!-- TABELA: DESKTOP -->
+                <div class="table-responsive admin-editoras-desktop">
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Nome</th>
+                                <th>CNPJ</th>
+                                <th>Cidade</th>
+                                <th>Estado</th>
+                                <th class="text-end pe-4">Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in editoras)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="rounded-circle bg-light text-success d-flex align-items-center justify-content-center"
+                                                 style="width: 42px; height: 42px; flex-shrink: 0;">
+                                                <i class="bi bi-building fs-5"></i>
+                                            </div>
+
+                                            <span class="fw-semibold text-break">
+                                                @item.Nome
+                                            </span>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(item.CNPJ) ? "—" : item.CNPJ)
+                                    </td>
+
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(item.Cidade) ? "—" : item.Cidade)
+                                    </td>
+
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(item.Estado) ? "—" : item.Estado)
+                                    </td>
+
+                                    <td class="text-end pe-4">
+                                        <div class="d-flex justify-content-end flex-wrap gap-2">
+
+                                            <a asp-action="Details"
+                                               asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-outline-secondary"
+                                               title="Ver detalhes">
+                                                <i class="bi bi-eye"></i>
+                                                <span class="d-none d-lg-inline">Detalhes</span>
+                                            </a>
+
+                                            <a asp-action="Edit"
+                                               asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-outline-success"
+                                               title="Editar editora">
+                                                <i class="bi bi-pencil-square"></i>
+                                                <span class="d-none d-lg-inline">Editar</span>
+                                            </a>
+
+                                            <a asp-action="Delete"
+                                               asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-outline-danger"
+                                               title="Excluir editora">
+                                                <i class="bi bi-trash"></i>
+                                                <span class="d-none d-lg-inline">Excluir</span>
+                                            </a>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+
+                <!-- CARDS: MOBILE -->
+                <div class="admin-editoras-mobile p-3">
+                    <div class="d-flex flex-column gap-3">
+
+                        @foreach (var item in editoras)
+                        {
+                            <article class="card admin-editora-card border shadow-sm">
+                                <div class="card-body">
+
+                                    <div class="d-flex align-items-start gap-3 mb-3">
+                                        <div class="rounded-circle bg-light text-success d-flex align-items-center justify-content-center"
+                                             style="width: 48px; height: 48px; flex-shrink: 0;">
+                                            <i class="bi bi-building fs-4"></i>
+                                        </div>
+
+                                        <div class="flex-grow-1 min-w-0">
+                                            <span class="text-muted small d-block">
+                                                Editora
+                                            </span>
+                                            <h3 class="h6 fw-bold mb-0 text-break">
+                                                @item.Nome
+                                            </h3>
+                                        </div>
+                                    </div>
+
+                                    <div class="admin-editora-informacoes rounded bg-light p-3 mb-3">
+                                        <div class="mb-3">
+                                            <span class="text-muted small d-block mb-1">CNPJ</span>
+                                            <span class="fw-medium text-break">
+                                                @(string.IsNullOrWhiteSpace(item.CNPJ) ? "Não informado" : item.CNPJ)
+                                            </span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <span class="text-muted small d-block mb-1">Cidade</span>
+                                            <span class="fw-medium text-break">
+                                                @(string.IsNullOrWhiteSpace(item.Cidade) ? "Não informada" : item.Cidade)
+                                            </span>
+                                        </div>
+
+                                        <div>
+                                            <span class="text-muted small d-block mb-1">Estado</span>
+                                            <span class="fw-medium text-break">
+                                                @(string.IsNullOrWhiteSpace(item.Estado) ? "Não informado" : item.Estado)
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex flex-wrap gap-2">
+
+                                        <a asp-action="Details"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-secondary flex-grow-1">
+                                            <i class="bi bi-eye me-1"></i>
+                                            Detalhes
+                                        </a>
+
+                                        <a asp-action="Edit"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-success flex-grow-1">
+                                            <i class="bi bi-pencil-square me-1"></i>
+                                            Editar
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-danger flex-grow-1">
+                                            <i class="bi bi-trash me-1"></i>
+                                            Excluir
+                                        </a>
+
+                                    </div>
+
+                                </div>
+                            </article>
+                        }
+
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- ESTADO VAZIO -->
+                <div class="text-center py-5 px-3">
+                    <i class="bi bi-building display-4 text-muted"></i>
+
+                    <h3 class="h5 mt-3 mb-2">
+                        Nenhuma editora cadastrada
+                    </h3>
+
+                    <p class="text-muted mb-3">
+                        Cadastre uma editora para associá-la aos livros do acervo.
+                    </p>
+
+                    <a asp-action="Create" class="btn btn-success">
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Nova editora
+                    </a>
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

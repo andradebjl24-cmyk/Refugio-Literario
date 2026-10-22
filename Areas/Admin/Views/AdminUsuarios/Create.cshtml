@@ -1,0 +1,20 @@
+@model Biblioteca.ViewModels.AdminUsuarioViewModel
+
+@{
+    ViewData["Title"] = "Cadastrar usuário";
+}
+
+<div class="container py-4">
+    <h1 class="mb-4">Cadastrar usuário</h1>
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <partial name="_CamposUsuario" model="Model" />
+        <button type="submit" class="btn btn-primary">Salvar usuário</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

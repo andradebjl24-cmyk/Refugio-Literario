@@ -1,0 +1,339 @@
+
+@model IEnumerable<Biblioteca.Models.Emprestimo>
+
+@{
+    ViewData["Title"] = "Meus empréstimos";
+
+    var emprestimos = Model?.ToList()
+        ?? new List<Biblioteca.Models.Emprestimo>();
+}
+
+<div class="pagina-emprestimos">
+
+    <div class="container">
+
+        <div class="card-emprestimos">
+
+            <!-- CABEÇALHO -->
+
+            <header class="emprestimos-cabecalho">
+
+                <h1 class="titulo-emprestimos">
+                    Meus empréstimos
+                </h1>
+
+                <p class="emprestimos-descricao">
+                    Acompanhe suas solicitações, os prazos
+                    e o histórico dos seus livros.
+                </p>
+
+                @if (emprestimos.Any())
+                {
+                    <div class="emprestimos-contador">
+                        <i class="bi bi-journal-bookmark"
+                           aria-hidden="true"></i>
+
+                        <span>
+                            @emprestimos.Count
+                            @(emprestimos.Count == 1
+                                ? "empréstimo"
+                                : "empréstimos")
+                        </span>
+                    </div>
+                }
+
+            </header>
+
+
+            @if (!emprestimos.Any())
+            {
+               
+                <div class="emprestimos-vazios">
+
+                    <div class="emprestimos-vazios-icone">
+                        <i class="bi bi-book" aria-hidden="true"></i>
+                    </div>
+
+                    <h2>
+                        Sua próxima leitura começa aqui
+                    </h2>
+
+                    <p>
+                        Você ainda não possui empréstimos.
+                        Quando solicitar um livro, poderá acompanhar
+                        o andamento por esta página.
+                    </p>
+
+                    <a asp-controller="Livro"
+                       asp-action="Index"
+                       class="btn-voltar-favoritos">
+
+                        <i class="bi bi-search" aria-hidden="true"></i>
+                        Explorar livros
+                    </a>
+
+                </div>
+            }
+            else
+            {
+               
+                <div class="emprestimos-tabela-desktop">
+
+                    <div class="table-responsive">
+
+                        <table class="table align-middle tabela-emprestimos">
+
+                            <thead>
+                                <tr>
+                                    <th scope="col">Livro</th>
+                                    <th scope="col">Tombo</th>
+                                    <th scope="col">Empréstimo</th>
+                                    <th scope="col">Devolução prevista</th>
+                                    <th scope="col">Devolução</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                @foreach (var emprestimo in emprestimos)
+                                {
+                                    <tr>
+
+                                        <td class="emprestimos-livro-titulo">
+                                            @(emprestimo.Exemplar?.Livro?.Titulo
+                                                ?? "Livro indisponível")
+                                        </td>
+
+                                        <td>
+                                            @(emprestimo.Exemplar?.Tombo ?? "—")
+                                        </td>
+
+                                        <td>
+                                            @emprestimo.DataEmprestimo.ToString("dd/MM/yyyy")
+                                        </td>
+
+                                        <td>
+                                            @emprestimo.DataPrevistaDevolucao.ToString("dd/MM/yyyy")
+                                        </td>
+
+                                        <td>
+                                            @(emprestimo.DataDevolucao.HasValue
+                                                ? emprestimo.DataDevolucao.Value.ToString("dd/MM/yyyy")
+                                                : "—")
+                                        </td>
+
+                                        <td>
+                                            <span class="emprestimo-status">
+
+                                                @switch (emprestimo.Status)
+                                                {
+                                                    case Biblioteca.Models.StatusEmprestimo.Solicitado:
+                                                        <span class="badge bg-info text-dark">
+                                                            Aguardando análise
+                                                        </span>
+                                                        break;
+
+                                                    case Biblioteca.Models.StatusEmprestimo.Ativo:
+                                                        if (emprestimo.DataPrevistaDevolucao.Date < DateTime.Today)
+                                                        {
+                                                            <span class="badge bg-danger">
+                                                                Atrasado
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge bg-primary">
+                                                                Ativo
+                                                            </span>
+                                                        }
+                                                        break;
+
+                                                    case Biblioteca.Models.StatusEmprestimo.Devolvido:
+                                                        <span class="badge bg-success">
+                                                            Devolvido
+                                                        </span>
+                                                        break;
+
+                                                    case Biblioteca.Models.StatusEmprestimo.Recusado:
+                                                        <span class="badge bg-danger">
+                                                            Recusado
+                                                        </span>
+                                                        break;
+                                                }
+
+                                            </span>
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+                <div class="emprestimos-lista-mobile">
+
+                    @foreach (var emprestimo in emprestimos)
+                    {
+                        <article class="emprestimo-mobile-card">
+
+                            <div class="emprestimo-mobile-cabecalho">
+
+                                <div class="emprestimo-mobile-icone">
+                                    <i class="bi bi-book-half"
+                                       aria-hidden="true"></i>
+                                </div>
+
+                                <div class="emprestimo-mobile-titulo">
+
+                                    <h2>
+                                        @(emprestimo.Exemplar?.Livro?.Titulo
+                                            ?? "Livro indisponível")
+                                    </h2>
+
+                                    <p>
+                                        Tombo:
+                                        <strong>
+                                            @(emprestimo.Exemplar?.Tombo ?? "—")
+                                        </strong>
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                            <div class="emprestimo-mobile-datas">
+
+                                <div class="emprestimo-mobile-campo">
+
+                                    <span>
+                                        <i class="bi bi-calendar-check"
+                                           aria-hidden="true"></i>
+                                        Solicitado em
+                                    </span>
+
+                                    <strong>
+                                        @emprestimo.DataEmprestimo.ToString("dd/MM/yyyy")
+                                    </strong>
+
+                                </div>
+
+                                <div class="emprestimo-mobile-campo">
+
+                                    <span>
+                                        <i class="bi bi-calendar-event"
+                                           aria-hidden="true"></i>
+                                        Devolução prevista
+                                    </span>
+
+                                    <strong>
+                                        @emprestimo.DataPrevistaDevolucao.ToString("dd/MM/yyyy")
+                                    </strong>
+
+                                </div>
+
+                                @if (emprestimo.DataDevolucao.HasValue)
+                                {
+                                    <div class="emprestimo-mobile-campo">
+
+                                        <span>
+                                            <i class="bi bi-check-circle"
+                                               aria-hidden="true"></i>
+                                            Devolvido em
+                                        </span>
+
+                                        <strong>
+                                            @emprestimo.DataDevolucao.Value.ToString("dd/MM/yyyy")
+                                        </strong>
+
+                                    </div>
+                                }
+
+                            </div>
+
+                            <div class="emprestimo-mobile-rodape">
+
+                                <span class="emprestimo-mobile-status-label">
+                                    Situação
+                                </span>
+
+                                <div class="emprestimo-mobile-status">
+
+                                    @switch (emprestimo.Status)
+                                    {
+                                        case Biblioteca.Models.StatusEmprestimo.Solicitado:
+                                            <span class="badge bg-info text-dark">
+                                                <i class="bi bi-hourglass-split"
+                                                   aria-hidden="true"></i>
+                                                Aguardando análise
+                                            </span>
+                                            break;
+
+                                        case Biblioteca.Models.StatusEmprestimo.Ativo:
+                                            if (emprestimo.DataPrevistaDevolucao.Date < DateTime.Today)
+                                            {
+                                                <span class="badge bg-danger">
+                                                    <i class="bi bi-exclamation-circle"
+                                                       aria-hidden="true"></i>
+                                                    Atrasado
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-primary">
+                                                    <i class="bi bi-bookmark-check"
+                                                       aria-hidden="true"></i>
+                                                    Ativo
+                                                </span>
+                                            }
+                                            break;
+
+                                        case Biblioteca.Models.StatusEmprestimo.Devolvido:
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle"
+                                                   aria-hidden="true"></i>
+                                                Devolvido
+                                            </span>
+                                            break;
+
+                                        case Biblioteca.Models.StatusEmprestimo.Recusado:
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-x-circle"
+                                                   aria-hidden="true"></i>
+                                                Recusado
+                                            </span>
+                                            break;
+                                    }
+
+                                </div>
+
+                            </div>
+
+                        </article>
+                    }
+
+                </div>
+            }
+
+            <div class="emprestimos-acoes">
+
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="btn-voltar-favoritos">
+
+                    <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                    Voltar para o início
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

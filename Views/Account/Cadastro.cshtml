@@ -1,0 +1,125 @@
+﻿@model Biblioteca.ViewModels.CadastroViewModel
+
+@{
+    ViewData["Title"] = "Criar conta";
+}
+
+<div class="pagina-autenticacao">
+    <div class="card-autenticacao">
+
+        <h2>Entre para nossa biblioteca!</h2>
+
+        <p class="autenticacao-descricao">
+            Crie sua conta e descubra novas aventuras entre páginas e histórias.
+        </p>
+
+        <form asp-controller="Account"
+              asp-action="Cadastro"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly"
+                 class="mensagem-erro mb-3">
+            </div>
+
+            <div class="campo-autenticacao">
+                <label asp-for="Nome" class="form-label">
+                    Nome
+                </label>
+
+                <input asp-for="Nome"
+                       class="form-control"
+                       placeholder="Digite seu nome"
+                       autocomplete="name" />
+
+                <span asp-validation-for="Nome"
+                      class="mensagem-erro">
+                </span>
+            </div>
+
+            <div class="campo-autenticacao">
+                <label asp-for="CPF" class="form-label">
+                    CPF
+                </label>
+
+                <input asp-for="CPF"
+                       class="form-control"
+                       placeholder="Digite seu CPF"
+                       autocomplete="off" />
+
+                <span asp-validation-for="CPF"
+                      class="mensagem-erro">
+                </span>
+            </div>
+
+            <div class="campo-autenticacao">
+                <label asp-for="Email" class="form-label">
+                    E-mail
+                </label>
+
+                <input asp-for="Email"
+                       type="email"
+                       class="form-control"
+                       placeholder="Digite seu e-mail"
+                       autocomplete="email" />
+
+                <span asp-validation-for="Email"
+                      class="mensagem-erro">
+                </span>
+            </div>
+
+            <div class="campo-autenticacao">
+                <label asp-for="Senha" class="form-label">
+                    Senha
+                </label>
+
+                <input asp-for="Senha"
+                       type="password"
+                       class="form-control"
+                       placeholder="Crie sua senha"
+                       autocomplete="new-password" />
+
+                <span asp-validation-for="Senha"
+                      class="mensagem-erro">
+                </span>
+            </div>
+
+            <div class="campo-autenticacao">
+                <label asp-for="ConfirmarSenha" class="form-label">
+                    Confirmar senha
+                </label>
+
+                <input asp-for="ConfirmarSenha"
+                       type="password"
+                       class="form-control"
+                       placeholder="Digite a senha novamente"
+                       autocomplete="new-password" />
+
+                <span asp-validation-for="ConfirmarSenha"
+                      class="mensagem-erro">
+                </span>
+            </div>
+
+            <button type="submit" class="btn-autenticacao">
+                Criar minha conta
+            </button>
+
+        </form>
+
+        <div class="autenticacao-voltar">
+            Já tem uma conta?
+            <a asp-controller="Account" asp-action="Login">
+                Entrar
+            </a>
+        </div>
+
+       <div class="autenticacao-voltar">
+    <a asp-controller="Home" asp-action="Index">
+        ← Voltar para a página inicial
+    </a>
+</div>
+
+    </div>
+</div>
+

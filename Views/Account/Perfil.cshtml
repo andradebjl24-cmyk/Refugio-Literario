@@ -1,0 +1,285 @@
+﻿@model Biblioteca.ViewModels.PerfilViewModel
+
+@{
+    ViewData["Title"] = "Meu perfil";
+
+    var avatares = new[]
+    {
+        new { Valor = "duende", Nome = "Duende" },
+        new { Valor = "elfa", Nome = "Elfa" },
+        new { Valor = "mago", Nome = "Mago" },
+        new { Valor = "coruja", Nome = "Coruja" },
+        new { Valor = "dragao", Nome = "Dragão" },
+        new { Valor = "gato", Nome = "Gato" },
+        new { Valor = "raposa", Nome = "Raposa" }
+    };
+
+    var avatarAtual = avatares.FirstOrDefault(
+        a => a.Valor == Model.Avatar);
+}
+
+<section class="perfil-pagina">
+    <div class="perfil-container">
+
+        <header class="perfil-cabecalho">
+            
+            <h1>Meu perfil</h1>
+
+            <p>
+                Cuide da sua identidade neste cantinho de histórias e magia.
+            </p>
+
+            <div class="perfil-divisor">
+                <span>✦</span>
+            </div>
+        </header>
+
+        <form asp-controller="Account"
+              asp-action="Perfil"
+              method="post"
+              class="perfil-formulario">
+
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly"
+                 class="perfil-erros"></div>
+
+            <div class="perfil-cartao">
+
+                <aside class="perfil-lateral">
+
+                    <div class="perfil-moldura-avatar">
+                        <div class="perfil-avatar-preview"
+                             id="avatarPreview"
+                             data-avatar-base="@Url.Content("~/images/avatars/")">
+
+                            @if (avatarAtual != null)
+                            {
+                                <img id="avatarPreviewImg"
+                                     src="@Url.Content($"~/images/avatars/{avatarAtual.Valor}.png")"
+                                     alt="Avatar de @Model.Nome">
+
+                                <span id="avatarPreviewEmoji"
+                                      class="perfil-avatar-emoji"
+                                      hidden>👤</span>
+                            }
+                            else
+                            {
+                                <img id="avatarPreviewImg"
+                                     src=""
+                                     alt="Prévia do avatar"
+                                     hidden>
+
+                                <span id="avatarPreviewEmoji"
+                                      class="perfil-avatar-emoji">👤</span>
+                            }
+
+                        </div>
+
+                        <span class="perfil-selo">✦</span>
+                    </div>
+
+                    <h2 class="perfil-nome-preview" id="nomePreview">
+                        @Model.Nome
+                    </h2>
+
+                    <p class="perfil-legenda">
+                        Leitor(a) da Biblioteca
+                    </p>
+
+                    <div class="perfil-lateral-frase">
+                        <span>❝</span>
+                        <p>
+                            Cada leitor carrega um universo dentro de si.
+                        </p>
+                    </div>
+
+                </aside>
+
+                <div class="perfil-conteudo">
+
+                    <section class="perfil-bloco">
+
+                        <div class="perfil-titulo-bloco">
+                            <span class="perfil-icone">✎</span>
+
+                            <div>
+                                <h3>Seus dados</h3>
+                                <p>Suas informações na biblioteca.</p>
+                            </div>
+                        </div>
+
+                        <div class="perfil-campo">
+                            <label asp-for="Nome">Nome</label>
+
+                            <input asp-for="Nome"
+                                   class="perfil-input"
+                                   id="Nome"
+                                   autocomplete="name"
+                                   placeholder="Como devemos chamar você?">
+
+                            <span asp-validation-for="Nome"
+                                  class="perfil-validacao"></span>
+                        </div>
+
+                        <div class="perfil-campo">
+                            <label for="perfilCpf">CPF</label>
+
+                            <input id="perfilCpf"
+                                   value="@Model.CPF"
+                                   class="perfil-input perfil-input-bloqueado"
+                                   readonly>
+
+                            <small>Este dado não pode ser alterado.</small>
+                        </div>
+
+                        <div class="perfil-campo">
+                            <label for="perfilEmail">E-mail</label>
+
+                            <input id="perfilEmail"
+                                   value="@Model.Email"
+                                   class="perfil-input perfil-input-bloqueado"
+                                   readonly>
+
+                            <small>Este dado não pode ser alterado.</small>
+                        </div>
+
+                    </section>
+
+                    <section class="perfil-bloco perfil-bloco-avatares">
+
+                        <div class="perfil-titulo-bloco">
+                            <span class="perfil-icone">✧</span>
+
+                            <div>
+                                <h3>Escolha seu avatar</h3>
+                                <p>Qual personagem combina com você?</p>
+                            </div>
+                        </div>
+
+                        <div class="perfil-grade-avatares">
+
+                            @foreach (var avatar in avatares)
+                            {
+                                var selecionado = Model.Avatar == avatar.Valor;
+
+                                <label class="perfil-opcao-avatar @(selecionado ? "selecionado" : "")"
+                                       for="avatar-@avatar.Valor">
+
+                                    <input asp-for="Avatar"
+                                           type="radio"
+                                           id="avatar-@avatar.Valor"
+                                           value="@avatar.Valor"
+                                           checked="@selecionado"
+                                           class="perfil-radio-avatar">
+
+                                    <span class="perfil-avatar-circulo">
+
+                                        <img src="@Url.Content($"~/images/avatars/{avatar.Valor}.png")"
+                                             alt="@avatar.Nome"
+                                             loading="lazy">
+
+                                        <span class="perfil-check">✓</span>
+
+                                    </span>
+
+                                    <span class="perfil-avatar-nome">
+                                        @avatar.Nome
+                                    </span>
+
+                                </label>
+                            }
+
+                        </div>
+
+                        <span asp-validation-for="Avatar"
+                              class="perfil-validacao"></span>
+
+                    </section>
+
+                    <div class="perfil-acoes">
+                        <button type="submit" class="perfil-botao-salvar">
+                            Salvar alterações
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        (() => {
+            const radios = document.querySelectorAll(
+                ".perfil-radio-avatar"
+            );
+
+            const preview = document.getElementById("avatarPreview");
+            const previewImg = document.getElementById("avatarPreviewImg");
+            const previewEmoji = document.getElementById("avatarPreviewEmoji");
+            const nomeInput = document.getElementById("Nome");
+            const nomePreview = document.getElementById("nomePreview");
+
+            if (!preview || !previewImg || !previewEmoji) {
+                return;
+            }
+
+            const baseAvatar = preview.dataset.avatarBase;
+
+            function atualizarAvatar() {
+                radios.forEach(radio => {
+                    const opcao = radio.closest(
+                        ".perfil-opcao-avatar"
+                    );
+
+                    if (opcao) {
+                        opcao.classList.toggle(
+                            "selecionado",
+                            radio.checked
+                        );
+                    }
+                });
+
+                const selecionado = document.querySelector(
+                    ".perfil-radio-avatar:checked"
+                );
+
+                if (!selecionado) {
+                    previewImg.hidden = true;
+                    previewEmoji.hidden = false;
+                    return;
+                }
+
+                previewImg.onerror = () => {
+                    previewImg.hidden = true;
+                    previewEmoji.hidden = false;
+                };
+
+                previewImg.onload = () => {
+                    previewImg.hidden = false;
+                    previewEmoji.hidden = true;
+                };
+
+                previewImg.alt = "Avatar " + selecionado.value;
+                previewImg.src =
+                    baseAvatar + selecionado.value + ".png";
+            }
+
+            radios.forEach(radio => {
+                radio.addEventListener("change", atualizarAvatar);
+            });
+
+            if (nomeInput && nomePreview) {
+                nomeInput.addEventListener("input", () => {
+                    nomePreview.textContent =
+                        nomeInput.value.trim() || "Seu nome";
+                });
+            }
+
+            atualizarAvatar();
+        })();
+    </script>
+}

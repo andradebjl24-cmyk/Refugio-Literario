@@ -1,0 +1,133 @@
+@model Biblioteca.Models.Emprestimo
+
+@{
+    ViewData["Title"] = "Novo Empréstimo";
+
+    var usuarios = ViewBag.Usuarios as IEnumerable<Biblioteca.Models.Usuario>
+        ?? Enumerable.Empty<Biblioteca.Models.Usuario>();
+
+    var exemplares = ViewBag.Exemplares as IEnumerable<Biblioteca.Models.Exemplar>
+        ?? Enumerable.Empty<Biblioteca.Models.Exemplar>();
+}
+
+<div class="admin-dashboard">
+
+    <div class="admin-cabecalho d-flex align-items-center gap-3 mb-4">
+        <div class="admin-cabecalho-icone">
+            <i class="bi bi-journal-plus"></i>
+        </div>
+        <div>
+            <h1 class="mb-1">Novo Empréstimo</h1>
+            <p class="text-muted mb-0">
+                Registre manualmente o empréstimo de um exemplar para um usuário.
+            </p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3"></div>
+
+                <div class="mb-4">
+                    <label asp-for="UsuarioId" class="form-label">
+                        Usuário
+                    </label>
+
+                    <select asp-for="UsuarioId" class="form-select">
+                        <option value="">Selecione o usuário</option>
+
+                        @foreach (var usuario in usuarios)
+                        {
+                            <option value="@usuario.Id">
+                                @usuario.Nome - @usuario.Email
+                            </option>
+                        }
+                    </select>
+
+                    <span asp-validation-for="UsuarioId"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="ExemplarId" class="form-label">
+                        Exemplar
+                    </label>
+
+                    <select asp-for="ExemplarId" class="form-select">
+                        <option value="">Selecione o exemplar</option>
+
+                        @foreach (var exemplar in exemplares)
+                        {
+                            <option value="@exemplar.Id">
+                                @(exemplar.Livro?.Titulo ?? "Livro não informado")
+                                - Tombo: @exemplar.Tombo
+                            </option>
+                        }
+                    </select>
+
+                    <span asp-validation-for="ExemplarId"
+                          class="text-danger"></span>
+
+                    <div class="form-text">
+                        São exibidos os exemplares disponíveis e, quando necessário,
+                        o exemplar selecionado anteriormente após uma validação.
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="DataEmprestimo" class="form-label">
+                            Data do empréstimo
+                        </label>
+
+                        <input asp-for="DataEmprestimo"
+                               type="date"
+                               class="form-control" />
+
+                        <span asp-validation-for="DataEmprestimo"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="DataPrevistaDevolucao" class="form-label">
+                            Devolução prevista
+                        </label>
+
+                        <input asp-for="DataPrevistaDevolucao"
+                               type="date"
+                               class="form-control" />
+
+                        <span asp-validation-for="DataPrevistaDevolucao"
+                              class="text-danger"></span>
+                    </div>
+                </div>
+
+                <hr class="my-3" />
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-lg me-1"></i>
+                        Registrar empréstimo
+                    </button>
+
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-lg me-1"></i>
+                        Cancelar
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

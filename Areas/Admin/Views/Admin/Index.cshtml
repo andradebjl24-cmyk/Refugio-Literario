@@ -1,0 +1,133 @@
+@model DashboardViewModel
+
+@{
+    ViewData["Title"] = "Painel Administrativo";
+}
+
+<div class="admin-dashboard">
+
+    <!-- CABEÇALHO DO PAINEL -->
+    <header class="admin-cabecalho">
+        <div>
+            <span class="admin-etiqueta">REFÚGIO LITERÁRIO</span>
+
+            <h1>Painel Administrativo</h1>
+
+            <p>Cuide do acervo e acompanhe a vida da biblioteca.</p>
+        </div>
+    </header>
+
+    <!-- CARTÕES INDICADORES -->
+    <div class="row g-4 admin-indicadores">
+
+        <!-- USUÁRIOS -->
+        <div class="col-6 col-xl-3">
+            <section class="admin-card admin-card-usuarios">
+
+                <div class="admin-card-topo">
+                    <div>
+                        <span class="admin-card-legenda">USUÁRIOS</span>
+                        <h2>@Model.Usuarios</h2>
+                    </div>
+
+                    <div class="admin-card-icone">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                </div>
+
+                <p>Usuários cadastrados</p>
+
+                <a asp-controller="AdminUsuarios"
+                   asp-action="Index"
+                   class="admin-card-link">
+                    Ver usuários
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+
+            </section>
+        </div>
+
+        <!-- LIVROS -->
+        <div class="col-6 col-xl-3">
+            <section class="admin-card admin-card-livros">
+
+                <div class="admin-card-topo">
+                    <div>
+                        <span class="admin-card-legenda">ACERVO</span>
+                        <h2>@Model.Livros</h2>
+                    </div>
+
+                    <div class="admin-card-icone">
+                        <i class="bi bi-book-half"></i>
+                    </div>
+                </div>
+
+                <p>Livros cadastrados</p>
+
+                <a asp-controller="AdminLivros"
+                   asp-action="Index"
+                   class="admin-card-link">
+                    Ver livros
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+
+            </section>
+        </div>
+
+        <!-- EXEMPLARES -->
+        <div class="col-6 col-xl-3">
+            <section class="admin-card admin-card-exemplares">
+
+                <div class="admin-card-topo">
+                    <div>
+                        <span class="admin-card-legenda">EXEMPLARES</span>
+                        <h2>@Model.Exemplares</h2>
+                    </div>
+
+                    <div class="admin-card-icone">
+                        <i class="bi bi-journals"></i>
+                    </div>
+                </div>
+
+                <p>Itens registrados no acervo</p>
+
+                <a asp-controller="AdminExemplares"
+                   asp-action="Index"
+                   class="admin-card-link">
+                    Ver exemplares
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+
+            </section>
+        </div>
+
+        <!-- EMPRÉSTIMOS -->
+        <div class="col-6 col-xl-3">
+            <section class="admin-card admin-card-emprestimos">
+
+                <div class="admin-card-topo">
+                    <div>
+                        <span class="admin-card-legenda">EMPRÉSTIMOS</span>
+                        <h2>@Model.Emprestimos</h2>
+                    </div>
+
+                    <div class="admin-card-icone">
+                        <i class="bi bi-arrow-left-right"></i>
+                    </div>
+                </div>
+
+                <p>Empréstimos ativos</p>
+
+                <a asp-controller="AdminEmprestimos"
+                   asp-action="Index"
+                   class="admin-card-link">
+                    Ver empréstimos
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+
+            </section>
+        </div>
+
+    </div>
+
+</div>

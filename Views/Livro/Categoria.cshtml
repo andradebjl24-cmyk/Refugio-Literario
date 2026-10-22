@@ -1,0 +1,86 @@
+﻿@model List<Biblioteca.Models.Livro>
+
+@{
+    ViewData["Title"] = "Livros da categoria";
+    var nomeCategoria = ViewBag.NomeCategoria as string ?? "Nossa biblioteca";
+}
+
+<section class="secao-livros-categoria">
+    <div class="container">
+
+        <div class="cabecalho-livros-categoria">
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="voltar-categoria">
+                <i class="bi bi-arrow-left"></i>
+                Voltar à biblioteca
+            </a>
+
+            <div class="secao-titulo">
+                <h2>@nomeCategoria</h2>
+                <p>Descubra os livros disponíveis nesta categoria.</p>
+            </div>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="lista-livros-categoria">
+
+                @foreach (var livro in Model)
+                {
+                    <article class="livro-categoria-card">
+
+                        <div class="livro-categoria-capa">
+                            @if (!string.IsNullOrWhiteSpace(livro.Imagem))
+                            {
+                                <img src="@Url.Content(livro.Imagem)"
+                                     alt="Capa de @livro.Titulo" />
+                            }
+                            else
+                            {
+                                <div class="livro-categoria-sem-capa">
+                                    <i class="bi bi-book-half"></i>
+                                    <span>Sem capa disponível</span>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="livro-categoria-info">
+                            <h3>@livro.Titulo</h3>
+
+                            <p class="livro-categoria-ano">
+                                @(livro.AnoPublicacao > 0
+                                    ? livro.AnoPublicacao.ToString()
+                                    : "Ano não informado")
+                            </p>
+                        </div>
+
+                        <a asp-controller="Livro"
+                           asp-action="Details"
+                           asp-route-id="@livro.Id"
+                           class="livro-categoria-link">
+                            Ver livro
+                        </a>
+
+                    </article>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="categoria-sem-livros">
+                <i class="bi bi-book"></i>
+                <h3>Nenhum livro encontrado</h3>
+                <p>Ainda não há livros cadastrados nesta categoria.</p>
+
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="livro-categoria-link">
+                    Voltar à biblioteca
+                </a>
+            </div>
+        }
+
+    </div>
+</section>

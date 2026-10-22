@@ -1,0 +1,35 @@
+@model Usuario
+
+@{
+    ViewData["Title"] = "Excluir Usuário";
+}
+
+<h1>Excluir Usuário</h1>
+
+<p>Tem certeza de que deseja excluir este usuário?</p>
+
+<div class="mb-3">
+    <strong>Nome:</strong> @Model.Nome
+</div>
+
+<div class="mb-3">
+    <strong>E-mail:</strong> @Model.Email
+</div>
+
+<div class="mb-3">
+    <strong>Tipo de usuário:</strong> @Model.TipoUsuario
+</div>
+
+<form asp-action="Delete" method="post">
+
+    <input type="hidden" asp-for="Id" />
+
+    <button type="submit" class="btn btn-danger">
+        Excluir
+    </button>
+
+    <a asp-action="Index" class="btn btn-secondary">
+        Cancelar
+    </a>
+
+</form>

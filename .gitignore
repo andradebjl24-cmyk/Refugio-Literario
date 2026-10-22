@@ -1,0 +1,21 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Compilação
+[Bb]in/
+[Oo]bj/
+
+# Configurações locais e segredos
+appsettings.Development.json
+secrets.json
+
+# Logs
+*.log
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

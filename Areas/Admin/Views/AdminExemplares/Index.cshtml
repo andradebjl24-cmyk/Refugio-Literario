@@ -1,0 +1,223 @@
+
+@model IEnumerable<Biblioteca.Models.Exemplar>
+
+@{
+    ViewData["Title"] = "Exemplares";
+
+    var exemplares = Model?.ToList()
+        ?? new List<Biblioteca.Models.Exemplar>();
+}
+
+<div class="admin-dashboard admin-exemplares">
+
+    <div class="admin-exemplares-conteudo">
+
+        <!-- CABEÇALHO -->
+        <header class="admin-exemplares-cabecalho">
+
+            <div>
+                <h1>Exemplares</h1>
+                <p>Gerencie os exemplares cadastrados na biblioteca.</p>
+            </div>
+
+            <a asp-action="Create"
+               class="btn btn-success admin-exemplares-novo">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                Novo exemplar
+            </a>
+
+            @if (exemplares.Any())
+            {
+                <div class="admin-exemplares-contador">
+                    <i class="bi bi-book-half" aria-hidden="true"></i>
+                    <span>
+                        @exemplares.Count
+                        @(exemplares.Count == 1 ? "exemplar cadastrado" : "exemplares cadastrados")
+                    </span>
+                </div>
+            }
+
+        </header>
+
+        <!-- LISTAGEM -->
+        <section class="admin-exemplares-painel">
+
+            @if (exemplares.Any())
+            {
+                <!-- TABELA DESKTOP -->
+                <div class="admin-exemplares-desktop">
+                    <div class="table-responsive">
+
+                        <table class="table table-hover align-middle mb-0 admin-exemplares-tabela">
+                            <thead>
+                                <tr>
+                                    <th>Tombo</th>
+                                    <th>Livro</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Ações</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var item in exemplares)
+                                {
+                                    var disponivel =
+                                        item.Status.ToString() == "Disponivel";
+
+                                    <tr>
+                                        <td class="fw-semibold">
+                                            @item.Tombo
+                                        </td>
+
+                                        <td>
+                                            @(item.Livro?.Titulo ?? "Livro não informado")
+                                        </td>
+
+                                        <td>
+                                            <span class="badge rounded-pill @(disponivel ? "bg-success" : "bg-secondary")">
+                                                @item.Status
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <div class="admin-exemplares-acoes">
+
+                                                <a asp-action="Details"
+                                                   asp-route-id="@item.Id"
+                                                   class="btn btn-sm btn-outline-secondary">
+                                                    <i class="bi bi-eye" aria-hidden="true"></i>
+                                                    Detalhes
+                                                </a>
+
+                                                <a asp-action="Edit"
+                                                   asp-route-id="@item.Id"
+                                                   class="btn btn-sm btn-outline-success">
+                                                    <i class="bi bi-pencil" aria-hidden="true"></i>
+                                                    Editar
+                                                </a>
+
+                                                <a asp-action="Delete"
+                                                   asp-route-id="@item.Id"
+                                                   class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-trash" aria-hidden="true"></i>
+                                                    Excluir
+                                                </a>
+
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
+                <!-- CARDS MOBILE -->
+                <div class="admin-exemplares-mobile">
+
+                    @foreach (var item in exemplares)
+                    {
+                        var disponivel =
+                            item.Status.ToString() == "Disponivel";
+
+                        <article class="admin-exemplar-card">
+
+                            <div class="admin-exemplar-card-cabecalho">
+
+                                <div class="admin-exemplar-card-icone">
+                                    <i class="bi bi-book-half" aria-hidden="true"></i>
+                                </div>
+
+                                <div class="admin-exemplar-card-titulo">
+                                    <span class="admin-exemplar-card-legenda">
+                                        Tombo
+                                    </span>
+
+                                    <h2>@item.Tombo</h2>
+                                </div>
+
+                                <span class="badge rounded-pill @(disponivel ? "bg-success" : "bg-secondary")">
+                                    @item.Status
+                                </span>
+
+                            </div>
+
+                            <div class="admin-exemplar-card-livro">
+                                <span>
+                                    <i class="bi bi-book" aria-hidden="true"></i>
+                                    Livro associado
+                                </span>
+
+                                <strong>
+                                    @(item.Livro?.Titulo ?? "Livro não informado")
+                                </strong>
+                            </div>
+
+                            <div class="admin-exemplar-card-acoes">
+
+                                <a asp-action="Details"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-outline-secondary">
+                                    <i class="bi bi-eye" aria-hidden="true"></i>
+                                    Detalhes
+                                </a>
+
+                                <a asp-action="Edit"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-outline-success">
+                                    <i class="bi bi-pencil" aria-hidden="true"></i>
+                                    Editar
+                                </a>
+
+                                <a asp-action="Delete"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-outline-danger">
+                                    <i class="bi bi-trash" aria-hidden="true"></i>
+                                    Excluir
+                                </a>
+
+                            </div>
+
+                        </article>
+                    }
+
+                </div>
+            }
+            else
+            {
+                <div class="admin-exemplares-vazio">
+
+                    <div class="admin-exemplares-vazio-icone">
+                        <i class="bi bi-book" aria-hidden="true"></i>
+                    </div>
+
+                    <h2>Nenhum exemplar cadastrado</h2>
+
+                    <p>
+                        Cadastre um exemplar para começar a organizar
+                        os livros disponíveis na biblioteca.
+                    </p>
+
+                    <a asp-action="Create" class="btn btn-success">
+                        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                        Novo exemplar
+                    </a>
+
+                </div>
+            }
+
+        </section>
+
+        <div class="admin-exemplares-voltar">
+            <a asp-area="Admin"
+               asp-controller="Admin"
+               asp-action="Index"
+               class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                Voltar ao painel
+            </a>
+        </div>
+
+    </div>
+</div>

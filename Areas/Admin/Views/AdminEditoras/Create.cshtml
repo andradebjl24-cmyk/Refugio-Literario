@@ -1,0 +1,45 @@
+@model Editora
+
+@{
+    ViewData["Title"] = "Cadastrar Editora";
+}
+
+<h1>Cadastrar Editora</h1>
+
+<form asp-action="Create" method="post">
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Nome" class="form-label"></label>
+        <input asp-for="Nome" class="form-control" />
+        <span asp-validation-for="Nome" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CNPJ" class="form-label"></label>
+        <input asp-for="CNPJ" class="form-control" />
+        <span asp-validation-for="CNPJ" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Cidade" class="form-label"></label>
+        <input asp-for="Cidade" class="form-control" />
+        <span asp-validation-for="Cidade" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Estado" class="form-label"></label>
+        <input asp-for="Estado" class="form-control" />
+        <span asp-validation-for="Estado" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Salvar
+    </button>
+
+    <a asp-action="Index" class="btn btn-secondary">
+        Voltar
+    </a>
+
+</form>

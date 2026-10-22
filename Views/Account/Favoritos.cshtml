@@ -1,0 +1,111 @@
+﻿@model IEnumerable<Biblioteca.Models.Favorito>
+
+@{
+    ViewData["Title"] = "Meus favoritos";
+}
+
+<section class="secao-livros-recentes pagina-favoritos">
+    <div class="container">
+
+        <div class="secao-titulo">
+            <h2> Meus favoritos</h2>
+            <p>Os livros que você guardou para suas próximas aventuras.</p>
+        </div>
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="favoritos-vazios">
+                <div class="favoritos-vazios-icone"></div>
+
+                <h3>Sua estante está esperando!</h3>
+
+                <p>
+                    Quando você favoritar um livro, ele aparecerá aqui.
+                </p>
+
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="livro-recente-link favoritos-explorar">
+                    Explorar livros
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="lista-livros-recentes lista-meus-favoritos">
+
+                @foreach (var favorito in Model)
+                {
+                    <article class="livro-recente">
+
+
+<div class="livro-recente-capa">
+
+    @if (!string.IsNullOrEmpty(favorito.Livro?.Imagem))
+    {
+        <img src="@Url.Content(favorito.Livro.Imagem)"
+             alt="Capa de @favorito.Livro.Titulo"
+             loading="lazy" />
+    }
+    else
+    {
+        <span>Sem capa</span>
+    }
+
+</div>
+
+
+                        <div class="livro-recente-info">
+                            <h3>@favorito.Livro?.Titulo</h3>
+
+                            @if (favorito.Livro?.Categoria != null)
+                            {
+                                <span>@favorito.Livro.Categoria.Nome</span>
+                            }
+                            else
+                            {
+                                <span>Livro do acervo</span>
+                            }
+                        </div>
+
+                        <a asp-controller="Livro"
+                           asp-action="Details"
+                           asp-route-id="@favorito.LivroId"
+                           class="livro-recente-link">
+                            Ver livro
+                        </a>
+
+                        <form asp-controller="Livro"
+                              asp-action="Favoritar"
+                              method="post"
+                              class="favorito-remover-form">
+
+                            @Html.AntiForgeryToken()
+
+                            <input type="hidden"
+                                   name="livroId"
+                                   value="@favorito.LivroId" />
+
+                            <input type="hidden"
+                                   name="origem"
+                                   value="favoritos" />
+                        </form>
+
+                    </article>
+                }
+
+            </div>
+        }
+
+       
+<div class="mt-4">
+    <a asp-controller="Home"
+       asp-action="Index"
+       class="btn-voltar-favoritos">
+        ← Voltar
+    </a>
+</div>
+
+
+    </div>
+</section>

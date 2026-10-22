@@ -1,0 +1,333 @@
+@model Biblioteca.Models.Livro
+@using Biblioteca.Models
+
+@{
+    ViewData["Title"] = Model.Titulo;
+
+    var exemplares = Model.Exemplares ?? new List<Exemplar>();
+    var disponiveis = exemplares.Count(e =>
+        e.Status == StatusExemplar.Disponivel);
+
+    var jaFavoritado =
+        ViewBag.JaFavoritado is bool favorito && favorito;
+
+    var caminhoCapa = string.IsNullOrWhiteSpace(Model.Imagem)
+        ? null
+        : Model.Imagem.StartsWith("/")
+            ? Model.Imagem
+            : Url.Content("~/images/livros/" + Model.Imagem);
+}
+
+<div class="pagina-detalhes-livro">
+
+    <div class="detalhes-cabecalho">
+        <a asp-controller="Livro"
+           asp-action="Buscar"
+           class="btn-voltar-livro">
+            <i class="bi bi-arrow-left"></i>
+            Voltar aos livros
+        </a>
+    </div>
+
+    <section class="detalhes-livro">
+
+        <!-- Capa -->
+        <div class="detalhes-capa-area">
+            @if (!string.IsNullOrEmpty(caminhoCapa))
+            {
+                <img src="@caminhoCapa"
+                     alt="Capa de @Model.Titulo"
+                     class="capa-livro" />
+            }
+            else
+            {
+                <div class="capa-livro capa-sem-imagem">
+                    <i class="bi bi-book-half"></i>
+                    <span>Sem capa disponível</span>
+                </div>
+            }
+        </div>
+
+        <!-- Informações -->
+        <div class="informacoes-livro">
+
+            <div class="detalhes-titulo-linha">
+                <div>
+                    <span class="detalhes-etiqueta">
+                        DETALHES DO LIVRO
+                    </span>
+
+                    <h1>@Model.Titulo</h1>
+
+                    @if (Model.Categoria != null)
+                    {
+                        <span class="categoria-livro">
+                            <i class="bi bi-bookmark"></i>
+                            @Model.Categoria.Nome
+                        </span>
+                    }
+                </div>
+
+                <!-- Favoritos -->
+                     
+<form asp-controller="Livro"
+      asp-action="Favoritar"
+      method="post"
+      class="form-favorito">
+
+    @Html.AntiForgeryToken()
+
+    <input type="hidden"
+           name="livroId"
+           value="@Model.Id" />
+
+    <button type="submit"
+            class="btn-favorito @(jaFavoritado ? "favoritado" : "")"
+            aria-label="@(jaFavoritado ? "Remover dos favoritos" : "Adicionar aos favoritos")"
+            title="@(jaFavoritado ? "Remover dos favoritos" : "Adicionar aos favoritos")">
+
+        <i class="bi @(jaFavoritado ? "bi-heart-fill" : "bi-heart")"></i>
+    </button>
+</form>
+
+            </div>
+
+            <div class="detalhes-divisor"></div>
+
+            <div class="informacoes-grade">
+
+                <div class="informacao-item">
+                    <span class="informacao-rotulo">
+                        <i class="bi bi-upc-scan"></i>
+                        ISBN
+                    </span>
+                    <strong>@Model.ISBN</strong>
+                </div>
+
+                <div class="informacao-item">
+                    <span class="informacao-rotulo">
+                        <i class="bi bi-calendar3"></i>
+                        Ano de publicação
+                    </span>
+                    <strong>
+                        @(Model.AnoPublicacao > 0
+                            ? Model.AnoPublicacao.ToString()
+                            : "Não informado")
+                    </strong>
+                </div>
+
+                <div class="informacao-item">
+                    <span class="informacao-rotulo">
+                        <i class="bi bi-building"></i>
+                        Editora
+                    </span>
+                    <strong>
+                        @(Model.Editora?.Nome ?? "Não informada")
+                    </strong>
+                </div>
+
+                <div class="informacao-item">
+                    <span class="informacao-rotulo">
+                        <i class="bi bi-collection"></i>
+                        Exemplares disponíveis
+                    </span>
+                    <strong>@disponiveis</strong>
+                </div>
+
+            </div>
+
+            <!-- Disponibilidade e empréstimo -->
+            <div class="emprestimo-area">
+                @if (TempData["MensagemEmprestimo"] != null)
+                {
+                    <div class="alert alert-success">@TempData["MensagemEmprestimo"]</div>
+                }
+                @if (TempData["ErroEmprestimo"] != null)
+                {
+                    <div class="alert alert-warning">@TempData["ErroEmprestimo"]</div>
+                }
+
+                @if (ViewBag.JaSolicitouEmprestimo is bool jaSolicitou && jaSolicitou)
+                {
+                    <span class="status-disponivel">
+                        <i class="bi bi-hourglass-split"></i>
+                        Você já tem uma solicitação pendente ou empréstimo ativo deste livro.
+                    </span>
+                    <a asp-controller="Account" asp-action="Emprestimos" class="btn-pedir-emprestimo">
+                        <i class="bi bi-journal-check"></i> Acompanhar solicitação
+                    </a>
+                }
+                else if (disponiveis > 0)
+                {
+                    <span class="status-disponivel">
+                        <i class="bi bi-check-circle-fill"></i>
+                        Disponível para empréstimo
+                    </span>
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <form asp-controller="Livro" asp-action="SolicitarEmprestimo" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="livroId" value="@Model.Id" />
+                            <button type="submit" class="btn-pedir-emprestimo">
+                                <i class="bi bi-book-half"></i>
+                                Solicitar empréstimo
+                            </button>
+                        </form>
+                        <small class="emprestimo-aviso">
+                            A solicitação será analisada pelo administrador. O prazo de 7 dias começa na aprovação.
+                        </small>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Details", "Livro", new { id = Model.Id })" class="btn-pedir-emprestimo">
+                            <i class="bi bi-box-arrow-in-right"></i> Entre para solicitar
+                        </a>
+                    }
+                }
+                else
+                {
+                    <span class="status-indisponivel">
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                        Nenhum exemplar disponível no momento
+                    </span>
+                }
+            </div>
+        </div>
+    </section>
+
+    @if (Model.LivrosAutores.Any(x => x.Autor != null))
+    {
+        <section class="painel-detalhes">
+            <div class="titulo-secao-detalhes">
+                <i class="bi bi-people"></i>
+                <h2>Autores</h2>
+            </div>
+            <p>@string.Join(", ", Model.LivrosAutores.Where(x => x.Autor != null).Select(x => x.Autor!.Nome))</p>
+        </section>
+    }
+
+    <!-- Sinopse -->
+    <section class="painel-detalhes sinopse-painel">
+        <div class="titulo-secao-detalhes">
+            <i class="bi bi-journal-text"></i>
+            <h2>Sobre este livro</h2>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Sinopse))
+        {
+            <div class="sinopse-rolagem">
+                <p>@Model.Sinopse</p>
+            </div>
+        }
+        else
+        {
+            <p class="texto-vazio">
+                A sinopse deste livro ainda não foi cadastrada.
+            </p>
+        }
+    </section>
+
+    <!-- Comentários -->
+    <section class="painel-detalhes comentarios-painel">
+
+        <div class="titulo-secao-detalhes">
+            <i class="bi bi-chat-left-text"></i>
+            <h2>O que você achou deste livro?</h2>
+        </div>
+
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <form asp-controller="Comentario"
+                  asp-action="Criar"
+                  method="post"
+                  class="comentario-formulario">
+
+                <input type="hidden"
+                       name="LivroId"
+                       value="@Model.Id" />
+
+                <label for="TextoComentario">
+                    Compartilhe sua opinião
+                </label>
+
+                <textarea id="TextoComentario"
+                          name="Texto"
+                          class="campo-comentario"
+                          rows="4"
+                          maxlength="2000"
+                          placeholder="Conte o que achou da leitura..."
+                          required></textarea>
+
+                <button type="submit"
+                        class="btn-enviar-comentario">
+                    <i class="bi bi-send"></i>
+                    Publicar comentário
+                </button>
+            </form>
+        }
+        else
+        {
+            <p class="texto-vazio">
+                <a asp-controller="Account"
+                   asp-action="Login">
+                    Entre na sua conta
+                </a>
+                para compartilhar sua opinião sobre este livro.
+            </p>
+        }
+
+                <div class="lista-comentarios">
+
+            @if (Model.Comentarios != null &&
+                 Model.Comentarios.Any())
+            {
+                @foreach (var comentario in Model.Comentarios
+                    .OrderByDescending(c => c.Data))
+                {
+                    var avatarComentario =
+                        string.IsNullOrWhiteSpace(comentario.Usuario?.Avatar)
+                            ? "duende"
+                            : comentario.Usuario!.Avatar;
+
+                    <article class="comentario-item">
+
+                        <div class="comentario-cabecalho">
+
+                            <div class="comentario-usuario">
+
+                                <img src="@Url.Content(
+                                    $"~/images/avatars/{avatarComentario}.png")"
+                                     alt="Avatar de @(comentario.Usuario?.Nome ?? "Leitor")"
+                                     class="comentario-avatar"
+                                     loading="lazy" />
+
+                                <span>
+                                    @(comentario.Usuario?.Nome ?? "Leitor")
+                                </span>
+
+                            </div>
+
+                            <time>
+                                @comentario.Data.ToString("dd/MM/yyyy")
+                            </time>
+
+                        </div>
+
+                        <p>@comentario.Texto</p>
+
+                    </article>
+                }
+            }
+            else
+            {
+                <p class="texto-vazio">
+                    Este livro ainda não tem comentários.
+                    Que tal ser a primeira pessoa a compartilhar sua opinião?
+                </p>
+            }
+
+        </div>
+    </section>
+
+</div>

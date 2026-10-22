@@ -1,0 +1,60 @@
+@model Biblioteca.Models.Exemplar
+
+@{
+    ViewData["Title"] = "Detalhes do Exemplar";
+}
+
+<div class="admin-dashboard">
+
+    <div class="admin-cabecalho d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <div class="admin-cabecalho-icone">
+                <i class="bi bi-book-half"></i>
+            </div>
+            <div>
+                <h1 class="mb-1">Detalhes do Exemplar</h1>
+                <p class="text-muted mb-0">Informações do exemplar cadastrado.</p>
+            </div>
+        </div>
+
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>
+            Voltar
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <dl class="row mb-0">
+
+                <dt class="col-sm-3 text-muted mb-2">Tombo</dt>
+                <dd class="col-sm-9 mb-3 fw-semibold">@Model.Tombo</dd>
+
+                <dt class="col-sm-3 text-muted mb-2">Livro</dt>
+                <dd class="col-sm-9 mb-3">@(Model.Livro?.Titulo ?? "Não informado")</dd>
+
+                <dt class="col-sm-3 text-muted mb-2">Status</dt>
+                <dd class="col-sm-9 mb-3">
+                    <span class="badge rounded-pill @(Model.Status.ToString() == "Disponivel" ? "bg-success" : "bg-secondary")">
+                        @Model.Status
+                    </span>
+                </dd>
+
+            </dl>
+
+            <hr />
+
+            <div class="d-flex flex-wrap gap-2">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-success">
+                    <i class="bi bi-pencil me-1"></i>
+                    Editar exemplar
+                </a>
+
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    Voltar à lista
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,185 @@
+@model IEnumerable<Biblioteca.Models.Autor>
+
+@{
+    ViewData["Title"] = "Autores";
+    var autores = Model?.ToList() ?? new List<Biblioteca.Models.Autor>();
+}
+
+<div class="admin-dashboard admin-autores">
+
+    <!-- CABEÇALHO -->
+    <div class="admin-cabecalho d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="mb-1">Autores</h1>
+            <p class="text-muted mb-0">
+                Gerencie os autores cadastrados no acervo da biblioteca.
+            </p>
+        </div>
+
+        <a asp-action="Create" class="btn btn-success">
+            <i class="bi bi-plus-circle me-1"></i>
+            Novo autor
+        </a>
+    </div>
+
+    <!-- CONTADOR -->
+    <div class="mb-3">
+        <span class="text-muted">
+            <i class="bi bi-people me-1"></i>
+            Total de autores:
+            <strong>@autores.Count</strong>
+        </span>
+    </div>
+
+    <!-- CONTEÚDO -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+
+            @if (autores.Any())
+            {
+                <!-- TABELA: DESKTOP -->
+                <div class="table-responsive admin-autores-desktop">
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Nome do autor</th>
+                                <th class="text-end pe-4">Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in autores)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="rounded-circle bg-light text-success d-flex align-items-center justify-content-center"
+                                                 style="width: 42px; height: 42px; flex-shrink: 0;">
+                                                <i class="bi bi-person-lines-fill fs-5"></i>
+                                            </div>
+
+                                            <span class="fw-semibold">
+                                                @item.Nome
+                                            </span>
+                                        </div>
+                                    </td>
+
+                                    <td class="text-end pe-4">
+                                        <div class="d-flex justify-content-end flex-wrap gap-2">
+
+                                            <a asp-action="Details"
+                                               asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-outline-secondary"
+                                               title="Ver detalhes">
+                                                <i class="bi bi-eye"></i>
+                                                <span class="d-none d-lg-inline">Detalhes</span>
+                                            </a>
+
+                                            <a asp-action="Edit"
+                                               asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-outline-success"
+                                               title="Editar autor">
+                                                <i class="bi bi-pencil-square"></i>
+                                                <span class="d-none d-lg-inline">Editar</span>
+                                            </a>
+
+                                            <a asp-action="Delete"
+                                               asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-outline-danger"
+                                               title="Excluir autor">
+                                                <i class="bi bi-trash"></i>
+                                                <span class="d-none d-lg-inline">Excluir</span>
+                                            </a>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+
+                <!-- CARDS: MOBILE -->
+                <div class="admin-autores-mobile p-3">
+                    <div class="d-flex flex-column gap-3">
+
+                        @foreach (var item in autores)
+                        {
+                            <article class="card admin-autor-card border shadow-sm">
+                                <div class="card-body">
+
+                                    <div class="d-flex align-items-center gap-3 mb-3">
+                                        <div class="rounded-circle bg-light text-success d-flex align-items-center justify-content-center"
+                                             style="width: 48px; height: 48px; flex-shrink: 0;">
+                                            <i class="bi bi-person-lines-fill fs-4"></i>
+                                        </div>
+
+                                        <div class="flex-grow-1 min-w-0">
+                                            <span class="text-muted small d-block">
+                                                Autor
+                                            </span>
+                                            <h2 class="h6 fw-bold mb-0 text-break">
+                                                @item.Nome
+                                            </h2>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex flex-wrap gap-2">
+
+                                        <a asp-action="Details"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-secondary flex-grow-1">
+                                            <i class="bi bi-eye me-1"></i>
+                                            Detalhes
+                                        </a>
+
+                                        <a asp-action="Edit"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-success flex-grow-1">
+                                            <i class="bi bi-pencil-square me-1"></i>
+                                            Editar
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-danger flex-grow-1">
+                                            <i class="bi bi-trash me-1"></i>
+                                            Excluir
+                                        </a>
+
+                                    </div>
+
+                                </div>
+                            </article>
+                        }
+
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- ESTADO VAZIO -->
+                <div class="text-center py-5 px-3">
+                    <i class="bi bi-journal-x display-4 text-muted"></i>
+
+                    <h2 class="h5 mt-3 mb-2">
+                        Nenhum autor cadastrado
+                    </h2>
+
+                    <p class="text-muted mb-3">
+                        Cadastre o primeiro autor para começar a organizar o acervo.
+                    </p>
+
+                    <a asp-action="Create" class="btn btn-success">
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Cadastrar autor
+                    </a>
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

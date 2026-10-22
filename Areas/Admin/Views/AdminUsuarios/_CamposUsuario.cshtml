@@ -1,0 +1,27 @@
+@model Biblioteca.ViewModels.AdminUsuarioViewModel
+
+<div class="mb-3">
+    <label asp-for="Nome" class="form-label"></label>
+    <input asp-for="Nome" class="form-control" autocomplete="name" />
+    <span asp-validation-for="Nome" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="CPF" class="form-label"></label>
+    <input asp-for="CPF" class="form-control" autocomplete="off" />
+    <span asp-validation-for="CPF" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="Email" class="form-label"></label>
+    <input asp-for="Email" type="email" class="form-control" autocomplete="email" />
+    <span asp-validation-for="Email" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="TipoUsuario" class="form-label">Tipo de usuário</label>
+    <select asp-for="TipoUsuario" asp-items="Html.GetEnumSelectList<Biblioteca.Models.TipoUsuario>()" class="form-select"></select>
+    <span asp-validation-for="TipoUsuario" class="text-danger"></span>
+</div>
+<div class="form-check mb-3">
+    <input asp-for="Ativo" class="form-check-input" />
+    <label asp-for="Ativo" class="form-check-label">Conta ativa</label>
+</div>

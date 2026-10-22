@@ -1,0 +1,270 @@
+@model Biblioteca.Models.Livro
+@using Biblioteca.Models
+
+@{
+    ViewData["Title"] = "Cadastrar livro";
+
+    var autores = ViewBag.Autores as IEnumerable<Autor>
+        ?? Enumerable.Empty<Autor>();
+
+    var autoresSelecionados = ViewBag.AutoresSelecionados as int[]
+        ?? Array.Empty<int>();
+
+    var categoriasPrincipais =
+        ViewBag.CategoriasPrincipais as IEnumerable<Categoria>
+        ?? Enumerable.Empty<Categoria>();
+
+    var subcategorias =
+        ViewBag.Subcategorias as IEnumerable<Categoria>
+        ?? Enumerable.Empty<Categoria>();
+
+    var subcategoriasSelecionadas =
+        ViewBag.SubcategoriasSelecionadas as int[]
+        ?? Array.Empty<int>();
+
+    var editoras = ViewBag.Editoras as IEnumerable<Editora>
+        ?? Enumerable.Empty<Editora>();
+}
+
+<div class="admin-dashboard">
+    <div class="admin-cabecalho mb-4">
+        <div>
+            <h1>Cadastrar livro</h1>
+            <p>Adicione um novo livro ao acervo.</p>
+        </div>
+        <div class="admin-cabecalho-icone">
+            <i class="bi bi-book-half"></i>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <form asp-action="Create"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Titulo" class="form-label">
+                        Título
+                    </label>
+                    <input asp-for="Titulo" class="form-control" />
+                    <span asp-validation-for="Titulo"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ISBN" class="form-label">
+                            ISBN
+                        </label>
+                        <input asp-for="ISBN" class="form-control" />
+                        <span asp-validation-for="ISBN"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="AnoPublicacao" class="form-label">
+                            Ano de publicação
+                        </label>
+                        <input asp-for="AnoPublicacao"
+                               class="form-control" />
+                        <span asp-validation-for="AnoPublicacao"
+                              class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="CategoriaId" class="form-label">
+                        Categoria principal
+                    </label>
+
+                    <select asp-for="CategoriaId" class="form-select">
+                        <option value="">Selecione uma categoria</option>
+                        @foreach (var categoria in categoriasPrincipais)
+                        {
+                            <option value="@categoria.Id">
+                                @categoria.Nome
+                            </option>
+                        }
+                    </select>
+
+                    <span asp-validation-for="CategoriaId"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Subcategorias
+                    </label>
+
+                    <div id="listaSubcategorias"
+                         class="border rounded p-3">
+
+                        @if (!subcategorias.Any())
+                        {
+                            <p class="text-muted mb-0">
+                                Ainda não existem subcategorias cadastradas.
+                            </p>
+                        }
+                        else
+                        {
+                            @foreach (var subcategoria in subcategorias)
+                            {
+                                <div class="form-check subcategoria-item mb-2"
+                                     data-pai="@subcategoria.CategoriaPaiId">
+
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           name="subcategoriasSelecionadas"
+                                           value="@subcategoria.Id"
+                                           id="subcategoria_@subcategoria.Id"
+                                           checked="@subcategoriasSelecionadas.Contains(subcategoria.Id)" />
+
+                                    <label class="form-check-label"
+                                           for="subcategoria_@subcategoria.Id">
+                                        @subcategoria.Nome
+                                    </label>
+                                </div>
+                            }
+                        }
+                    </div>
+
+                    <span asp-validation-for="Subcategorias"
+                          class="text-danger"></span>
+
+                    <small class="text-muted">
+                        Selecione uma categoria principal para visualizar
+                        suas subcategorias. Você pode marcar várias.
+                    </small>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="EditoraId" class="form-label">
+                        Editora
+                    </label>
+
+                    <select asp-for="EditoraId" class="form-select">
+                        <option value="">Selecione uma editora</option>
+                        @foreach (var editora in editoras)
+                        {
+                            <option value="@editora.Id">
+                                @editora.Nome
+                            </option>
+                        }
+                    </select>
+
+                    <span asp-validation-for="EditoraId"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Autores</label>
+
+                    <select name="autoresSelecionados"
+                            class="form-select"
+                            multiple
+                            size="5">
+                        @foreach (var autor in autores)
+                        {
+                            <option value="@autor.Id"
+                                    selected="@autoresSelecionados.Contains(autor.Id)">
+                                @autor.Nome
+                            </option>
+                        }
+                    </select>
+
+                    <small class="text-muted">
+                        Você pode selecionar vários autores usando Ctrl
+                        no Windows.
+                    </small>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Sinopse" class="form-label">
+                        Sinopse
+                    </label>
+                    <textarea asp-for="Sinopse"
+                              class="form-control"
+                              rows="5"
+                              maxlength="3000"></textarea>
+                    <span asp-validation-for="Sinopse"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input asp-for="Destaque"
+                           class="form-check-input" />
+                    <label asp-for="Destaque"
+                           class="form-check-label">
+                        Exibir entre os livros em destaque
+                    </label>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Capa do livro</label>
+                    <input type="file"
+                           name="imagem"
+                           class="form-control"
+                           accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+                    <span class="text-danger">
+                        @Html.ValidationMessage("imagem")
+                    </span>
+                    <small class="text-muted">
+                        Formatos JPG, PNG ou WEBP; máximo de 5 MB.
+                    </small>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle me-1"></i>
+                        Cadastrar livro
+                    </button>
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Voltar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        (() => {
+            const categoria = document.getElementById("CategoriaId");
+            const itens = document.querySelectorAll(".subcategoria-item");
+
+            function atualizarSubcategorias(limparIncompativeis) {
+                const categoriaId = categoria.value;
+
+                itens.forEach(item => {
+                    const corresponde = categoriaId !== ""
+                        && item.dataset.pai === categoriaId;
+
+                    item.style.display = corresponde ? "" : "none";
+
+                    if (!corresponde && limparIncompativeis) {
+                        const checkbox = item.querySelector("input");
+                        checkbox.checked = false;
+                    }
+                });
+            }
+
+            categoria.addEventListener("change", () => {
+                atualizarSubcategorias(true);
+            });
+
+            atualizarSubcategorias(false);
+        })();
+    </script>
+}

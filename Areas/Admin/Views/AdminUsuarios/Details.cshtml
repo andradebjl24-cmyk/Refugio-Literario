@@ -1,0 +1,83 @@
+@model Biblioteca.Models.Usuario
+
+@{
+    ViewData["Title"] = "Detalhes do Usuário";
+}
+
+<div class="admin-dashboard">
+
+    <div class="admin-cabecalho d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <div class="admin-cabecalho-icone">
+                <i class="bi bi-person-lines-fill"></i>
+            </div>
+            <div>
+                <h1 class="mb-1">Detalhes do Usuário</h1>
+                <p class="text-muted mb-0">Informações da conta cadastrada.</p>
+            </div>
+        </div>
+
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>
+            Voltar
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+
+            <dl class="row mb-0">
+
+                <dt class="col-sm-3 text-muted mb-2">Nome</dt>
+                <dd class="col-sm-9 mb-3">@Model.Nome</dd>
+
+                <dt class="col-sm-3 text-muted mb-2">CPF</dt>
+                <dd class="col-sm-9 mb-3">@(string.IsNullOrWhiteSpace(Model.CPF) ? "Não informado" : Model.CPF)</dd>
+
+                <dt class="col-sm-3 text-muted mb-2">E-mail</dt>
+                <dd class="col-sm-9 mb-3">@Model.Email</dd>
+
+                <dt class="col-sm-3 text-muted mb-2">Tipo de usuário</dt>
+                <dd class="col-sm-9 mb-3">
+                    @if (Model.TipoUsuario.ToString() == "Administrador")
+                    {
+                        <span class="badge rounded-pill bg-primary">Administrador</span>
+                    }
+                    else
+                    {
+                        <span class="badge rounded-pill bg-secondary">Usuário comum</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3 text-muted mb-2">Situação</dt>
+                <dd class="col-sm-9 mb-3">
+                    @if (Model.Ativo)
+                    {
+                        <span class="badge rounded-pill bg-success">Ativo</span>
+                    }
+                    else
+                    {
+                        <span class="badge rounded-pill bg-danger">Inativo</span>
+                    }
+                </dd>
+
+            </dl>
+
+            <hr />
+
+            <div class="d-flex flex-wrap gap-2">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-success">
+                    <i class="bi bi-pencil me-1"></i>
+                    Editar usuário
+                </a>
+
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    Voltar à lista
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+

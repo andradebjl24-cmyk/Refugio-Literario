@@ -1,0 +1,79 @@
+@model LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+    var returnUrl = Context.Request.Query["returnUrl"].ToString();
+}
+
+<div class="pagina-autenticacao">
+    <div class="card-autenticacao">
+
+        <h2>Bem-vindo de volta!</h2>
+
+        <p class="autenticacao-descricao">
+            Entre na sua conta e continue sua aventura literária.
+        </p>
+
+        @if (TempData["Mensagem"] != null)
+        {
+            <div class="alert alert-success">@TempData["Mensagem"]</div>
+        }
+
+        <form asp-action="Login" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
+
+            <div asp-validation-summary="ModelOnly"
+                 class="mensagem-erro">
+            </div>
+
+            <div class="campo-autenticacao">
+                <label asp-for="Email" class="form-label">
+                    E-mail
+                </label>
+
+                <input asp-for="Email"
+                       class="form-control"
+                       placeholder="Digite seu e-mail"
+                       autocomplete="email" />
+
+                <span asp-validation-for="Email"
+                      class="mensagem-erro">
+                </span>
+            </div>
+
+            <div class="campo-autenticacao">
+                <label asp-for="Senha" class="form-label">
+                    Senha
+                </label>
+
+                <input asp-for="Senha"
+                       type="password"
+                       class="form-control"
+                       placeholder="Digite sua senha"
+                       autocomplete="current-password" />
+
+                <span asp-validation-for="Senha"
+                      class="mensagem-erro">
+                </span>
+            </div>
+
+            <div class="form-check mb-3">
+                <input asp-for="Lembrar" class="form-check-input" />
+                <label asp-for="Lembrar" class="form-check-label">Manter conectado</label>
+            </div>
+
+            <button type="submit" class="btn-autenticacao">
+                Entrar na biblioteca
+            </button>
+
+        </form>
+
+       <div class="autenticacao-voltar">
+    <a asp-controller="Home" asp-action="Index">
+        ← Voltar para a página inicial
+    </a>
+</div>
+
+    </div>
+</div>

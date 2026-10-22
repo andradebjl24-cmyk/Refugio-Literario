@@ -1,0 +1,276 @@
+@model IEnumerable<Biblioteca.Models.Emprestimo>
+@using Biblioteca.Models
+
+@{
+    ViewData["Title"] = "Solicitações e Empréstimos";
+    var emprestimos = Model?.ToList() ?? new List<Biblioteca.Models.Emprestimo>();
+}
+
+<div class="admin-dashboard admin-emprestimos">
+
+    <div class="admin-cabecalho d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="mb-1">Solicitações e Empréstimos</h1>
+            <p class="text-muted mb-0">
+                Analise pedidos dos usuários e registre devoluções.
+            </p>
+        </div>
+
+        <a asp-action="Create" class="btn btn-success">
+            <i class="bi bi-plus-lg me-1"></i>
+            Registrar empréstimo
+        </a>
+    </div>
+
+    @if (TempData["Mensagem"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>
+            @TempData["Mensagem"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+    }
+
+    @if (TempData["Erro"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            @TempData["Erro"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+    }
+
+    <div class="mb-3">
+        <span class="text-muted">
+            <i class="bi bi-journal-check me-1"></i>
+            Total de registros:
+            <strong>@emprestimos.Count</strong>
+        </span>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+
+            @if (!emprestimos.Any())
+            {
+                <div class="text-center py-5 px-3">
+                    <i class="bi bi-journal-check text-muted display-4"></i>
+                    <h2 class="h5 mt-3">Nenhuma solicitação ou empréstimo</h2>
+                    <p class="text-muted mb-3">
+                        Quando houver pedidos pendentes ou empréstimos ativos, eles aparecerão aqui.
+                    </p>
+                    <a asp-action="Create" class="btn btn-success">
+                        <i class="bi bi-plus-lg me-1"></i>
+                        Registrar empréstimo
+                    </a>
+                </div>
+            }
+            else
+            {
+                <!-- TABELA PARA DESKTOP -->
+                <div class="table-responsive admin-emprestimos-desktop">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Usuário</th>
+                                <th>Livro</th>
+                                <th>Tombo</th>
+                                <th>Data</th>
+                                <th>Devolução prevista</th>
+                                <th>Status</th>
+                                <th class="text-end pe-4">Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in emprestimos)
+                            {
+                                var solicitado = item.Status == StatusEmprestimo.Solicitado;
+                                var atrasado = item.Status == StatusEmprestimo.Ativo
+                                    && item.DataPrevistaDevolucao.Date < DateTime.Today;
+
+                                <tr>
+                                    <td class="ps-4 fw-semibold">
+                                        @(item.Usuario?.Nome ?? "Usuário não informado")
+                                    </td>
+                                    <td>
+                                        @(item.Exemplar?.Livro?.Titulo ?? "Livro não informado")
+                                    </td>
+                                    <td>@(item.Exemplar?.Tombo ?? "—")</td>
+                                    <td class="text-nowrap">
+                                        @item.DataEmprestimo.ToString("dd/MM/yyyy")
+                                    </td>
+                                    <td class="text-nowrap">
+                                        <span class="@(atrasado ? "text-danger fw-bold" : "")">
+                                            @item.DataPrevistaDevolucao.ToString("dd/MM/yyyy")
+                                        </span>
+                                        @if (atrasado)
+                                        {
+                                            <span class="badge rounded-pill bg-danger ms-1">Atrasado</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (solicitado)
+                                        {
+                                            <span class="badge rounded-pill bg-info text-dark">Pendente</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge rounded-pill bg-warning text-dark">Ativo</span>
+                                        }
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="d-flex justify-content-end flex-wrap gap-2">
+                                            @if (solicitado)
+                                            {
+                                                <form asp-action="Aprovar" asp-route-id="@item.Id" method="post">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-success"
+                                                            onclick="return confirm('Aprovar esta solicitação?');">
+                                                        <i class="bi bi-check-lg me-1"></i>Aprovar
+                                                    </button>
+                                                </form>
+
+                                                <form asp-action="Recusar" asp-route-id="@item.Id" method="post">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-outline-danger"
+                                                            onclick="return confirm('Recusar esta solicitação?');">
+                                                        <i class="bi bi-x-lg me-1"></i>Recusar
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <form asp-action="Devolver" asp-route-id="@item.Id" method="post">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-success"
+                                                            onclick="return confirm('Confirmar a devolução deste livro?');">
+                                                        <i class="bi bi-arrow-return-left me-1"></i>Devolver
+                                                    </button>
+                                                </form>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- CARDS PARA CELULAR -->
+                <div class="admin-emprestimos-mobile p-3">
+                    <div class="d-flex flex-column gap-3">
+                        @foreach (var item in emprestimos)
+                        {
+                            var solicitado = item.Status == StatusEmprestimo.Solicitado;
+                            var atrasado = item.Status == StatusEmprestimo.Ativo
+                                && item.DataPrevistaDevolucao.Date < DateTime.Today;
+
+                            <article class="card admin-emprestimo-card shadow-sm">
+                                <div class="card-body">
+
+                                    <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+                                        <div class="d-flex align-items-start gap-3 min-w-0">
+                                            <div class="admin-emprestimo-icone">
+                                                <i class="bi bi-book-half"></i>
+                                            </div>
+                                            <div class="min-w-0">
+                                                <span class="small text-muted d-block">Livro</span>
+                                                <h2 class="h6 fw-bold mb-1 text-break">
+                                                    @(item.Exemplar?.Livro?.Titulo ?? "Livro não informado")
+                                                </h2>
+                                                <span class="small text-muted">
+                                                    Tombo: @(item.Exemplar?.Tombo ?? "—")
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        @if (solicitado)
+                                        {
+                                            <span class="badge rounded-pill bg-info text-dark">Pendente</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge rounded-pill bg-warning text-dark">Ativo</span>
+                                        }
+                                    </div>
+
+                                    <div class="admin-emprestimo-detalhes">
+                                        <div>
+                                            <span class="small text-muted d-block">Usuário</span>
+                                            <span class="fw-semibold text-break">
+                                                @(item.Usuario?.Nome ?? "Usuário não informado")
+                                            </span>
+                                        </div>
+
+                                        <div>
+                                            <span class="small text-muted d-block">Data do empréstimo</span>
+                                            <span>@item.DataEmprestimo.ToString("dd/MM/yyyy")</span>
+                                        </div>
+
+                                        <div>
+                                            <span class="small text-muted d-block">Devolução prevista</span>
+                                            <span class="@(atrasado ? "text-danger fw-bold" : "")">
+                                                @item.DataPrevistaDevolucao.ToString("dd/MM/yyyy")
+                                            </span>
+                                            @if (atrasado)
+                                            {
+                                                <span class="badge rounded-pill bg-danger ms-1">Atrasado</span>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="admin-emprestimo-acoes mt-3">
+                                        @if (solicitado)
+                                        {
+                                            <form asp-action="Aprovar" asp-route-id="@item.Id" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-success w-100"
+                                                        onclick="return confirm('Aprovar esta solicitação?');">
+                                                    <i class="bi bi-check-lg me-1"></i>Aprovar solicitação
+                                                </button>
+                                            </form>
+
+                                            <form asp-action="Recusar" asp-route-id="@item.Id" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-outline-danger w-100"
+                                                        onclick="return confirm('Recusar esta solicitação?');">
+                                                    <i class="bi bi-x-lg me-1"></i>Recusar solicitação
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="Devolver" asp-route-id="@item.Id" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-success w-100"
+                                                        onclick="return confirm('Confirmar a devolução deste livro?');">
+                                                    <i class="bi bi-arrow-return-left me-1"></i>Registrar devolução
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+
+                                </div>
+                            </article>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>
+            Voltar ao painel
+        </a>
+    </div>
+
+</div>

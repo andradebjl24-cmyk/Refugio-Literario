@@ -1,0 +1,215 @@
+@model IEnumerable<Biblioteca.Models.Usuario>
+
+@{
+    ViewData["Title"] = "Usuários";
+    var usuarios = Model?.ToList() ?? new List<Biblioteca.Models.Usuario>();
+}
+
+<div class="admin-dashboard admin-usuarios">
+
+    <!-- CABEÇALHO -->
+    <div class="admin-cabecalho d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="mb-1">Usuários</h1>
+            <p class="text-muted mb-0">
+                Gerencie os usuários cadastrados na biblioteca.
+            </p>
+        </div>
+
+        <a asp-action="Create" class="btn btn-success">
+            <i class="bi bi-person-plus me-1"></i>
+            Novo usuário
+        </a>
+    </div>
+
+    <!-- CONTADOR -->
+    <div class="mb-3">
+        <span class="text-muted">
+            <i class="bi bi-people me-1"></i>
+            Total de usuários:
+            <strong>@usuarios.Count</strong>
+        </span>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+
+            @if (usuarios.Any())
+            {
+                <!-- TABELA: DESKTOP -->
+                <div class="table-responsive admin-usuarios-desktop">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Nome</th>
+                                <th>CPF</th>
+                                <th>E-mail</th>
+                                <th>Tipo</th>
+                                <th>Status</th>
+                                <th class="text-end pe-4">Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in usuarios)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-semibold">@item.Nome</td>
+                                    <td>@item.CPF</td>
+                                    <td>@item.Email</td>
+
+                                    <td>
+                                        @if (item.TipoUsuario.ToString() == "Administrador")
+                                        {
+                                            <span class="badge rounded-pill bg-primary">Administrador</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge rounded-pill bg-secondary">Usuário</span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @if (item.Ativo)
+                                        {
+                                            <span class="badge rounded-pill bg-success">Ativo</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge rounded-pill bg-danger">Inativo</span>
+                                        }
+                                    </td>
+
+                                    <td class="text-end pe-4">
+                                        <div class="d-flex justify-content-end flex-wrap gap-2">
+                                            <a asp-action="Details"
+                                               asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-outline-secondary"
+                                               title="Detalhes">
+                                                <i class="bi bi-eye"></i>
+                                                <span class="d-none d-lg-inline">Detalhes</span>
+                                            </a>
+
+                                            <a asp-action="Edit"
+                                               asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-outline-success"
+                                               title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                                <span class="d-none d-lg-inline">Editar</span>
+                                            </a>
+
+                                            <a asp-action="Delete"
+                                               asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-outline-danger"
+                                               title="Excluir">
+                                                <i class="bi bi-trash"></i>
+                                                <span class="d-none d-lg-inline">Excluir</span>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- CARDS: MOBILE -->
+                <div class="admin-usuarios-mobile p-3">
+                    <div class="d-flex flex-column gap-3">
+
+                        @foreach (var item in usuarios)
+                        {
+                            <article class="card admin-usuario-card shadow-sm">
+                                <div class="card-body">
+
+                                    <div class="d-flex align-items-start gap-3 mb-3">
+                                        <div class="admin-usuario-icone">
+                                            <i class="bi bi-person-fill"></i>
+                                        </div>
+
+                                        <div class="flex-grow-1 min-w-0">
+                                            <h2 class="h6 fw-bold mb-1 text-break">
+                                                @item.Nome
+                                            </h2>
+
+                                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                                @if (item.TipoUsuario.ToString() == "Administrador")
+                                                {
+                                                    <span class="badge rounded-pill bg-primary">Administrador</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge rounded-pill bg-secondary">Usuário</span>
+                                                }
+
+                                                @if (item.Ativo)
+                                                {
+                                                    <span class="badge rounded-pill bg-success">Ativo</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge rounded-pill bg-danger">Inativo</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="admin-usuario-detalhes">
+                                        <div>
+                                            <span class="small text-muted d-block">CPF</span>
+                                            <span class="text-break">@item.CPF</span>
+                                        </div>
+
+                                        <div>
+                                            <span class="small text-muted d-block">E-mail</span>
+                                            <span class="text-break">@item.Email</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex flex-wrap gap-2 mt-3">
+                                        <a asp-action="Details"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-secondary flex-grow-1">
+                                            <i class="bi bi-eye me-1"></i>Detalhes
+                                        </a>
+
+                                        <a asp-action="Edit"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-success flex-grow-1">
+                                            <i class="bi bi-pencil me-1"></i>Editar
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-danger flex-grow-1">
+                                            <i class="bi bi-trash me-1"></i>Excluir
+                                        </a>
+                                    </div>
+
+                                </div>
+                            </article>
+                        }
+
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- ESTADO VAZIO -->
+                <div class="text-center py-5 px-3">
+                    <i class="bi bi-people text-muted display-4"></i>
+                    <h2 class="h5 mt-3 mb-2">Nenhum usuário cadastrado</h2>
+                    <p class="text-muted mb-3">
+                        Os usuários cadastrados aparecerão aqui.
+                    </p>
+                    <a asp-action="Create" class="btn btn-success">
+                        <i class="bi bi-person-plus me-1"></i>
+                        Novo usuário
+                    </a>
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

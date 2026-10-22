@@ -1,0 +1,459 @@
+
+@model List<Biblioteca.Models.Livro>
+
+@{
+    ViewData["Title"] = "Início";
+    ViewData["PaginaInicial"] = true;
+
+    var categorias = ViewBag.Categorias
+        as IEnumerable<Biblioteca.Models.Categoria>;
+
+    var livrosRecentes = ViewBag.Recentes
+        as IEnumerable<Biblioteca.Models.Livro>;
+
+    var comentarios = ViewBag.Comentarios
+        as List<Biblioteca.Models.Comentario>;
+}
+
+<!-- HERO / APRESENTAÇÃO -->
+<section class="hero-biblioteca">
+
+    <img src="~/images/hero.jpg"
+         alt="Uma biblioteca mágica em uma floresta encantada"
+         class="hero-biblioteca-img"
+         fetchpriority="high">
+
+    <div class="hero-overlay">
+
+        <div class="hero-conteudo">
+
+            <p class="hero-subtitulo">
+                Ora, vejo que temos um novo visitante.
+            </p>
+
+            <h1>
+                Um lugar para quem gosta de histórias.
+            </h1>
+
+            <p class="hero-texto">
+                Porque algumas páginas escondem mundos inteiros.
+            </p>
+
+            <a href="#livros-destaque"
+               class="hero-botao">
+                Explorar acervo
+            </a>
+
+        </div>
+    </div>
+</section>
+
+<!-- LIVROS EM DESTAQUE -->
+<section class="secao-livros-destaque"
+         id="livros-destaque">
+
+    <div class="container">
+
+        <div class="secao-titulo">
+
+            <h2>
+                Livros em destaque
+            </h2>
+
+            <p>
+                Uma boa história sempre encontra seu caminho até o leitor.
+            </p>
+
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="row g-3 g-md-4">
+
+                @foreach (var livro in Model)
+                {
+                    <div class="col-6 col-md-6 col-lg-3">
+
+                        <article class="livro-card">
+
+                            <div class="livro-card-capa">
+
+                                @if (!string.IsNullOrWhiteSpace(livro.Imagem))
+                                {
+                                    <img src="@Url.Content(livro.Imagem)"
+                                         alt="Capa de @livro.Titulo"
+                                         loading="lazy">
+                                }
+                                else
+                                {
+                                    <div class="livro-capa-placeholder">
+                                        <i class="bi bi-book" aria-hidden="true"></i>
+                                        <span>Sem capa</span>
+                                    </div>
+                                }
+
+                            </div>
+
+                            <div class="livro-card-conteudo">
+
+                                <h3>
+                                    @livro.Titulo
+                                </h3>
+
+                                @if (livro.Categoria != null)
+                                {
+                                    <span class="livro-categoria">
+                                        @livro.Categoria.Nome
+                                    </span>
+                                }
+
+                                <p>
+                                    @livro.AnoPublicacao
+                                </p>
+
+                                <a asp-controller="Livro"
+                                   asp-action="Details"
+                                   asp-route-id="@livro.Id"
+                                   class="livro-card-link">
+
+                                    Ver livro
+                                    <i class="bi bi-arrow-right"
+                                       aria-hidden="true"></i>
+                                </a>
+
+                            </div>
+
+                        </article>
+
+                    </div>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="estado-vazio-home">
+                <i class="bi bi-book" aria-hidden="true"></i>
+
+                <p>
+                    Ainda não há livros em destaque.
+                </p>
+            </div>
+        }
+
+    </div>
+</section>
+
+<!-- PRINCIPAIS CATEGORIAS -->
+<section class="secao-categorias"
+         id="categorias">
+
+    <div class="container">
+
+        <div class="secao-titulo">
+
+            <h2>
+                Principais categorias
+            </h2>
+
+            <p>
+                Escolha um gênero e descubra os livros
+                disponíveis em nossa biblioteca.
+            </p>
+
+        </div>
+
+        @if (categorias != null && categorias.Any())
+        {
+            <div class="row g-3 g-md-4">
+
+                @foreach (var categoria in categorias)
+                {
+                    <div class="col-6 col-md-4 col-lg-3">
+
+                        <article class="categoria-card">
+
+                            <div class="categoria-card-conteudo">
+
+                                <h3>
+                                    @categoria.Nome
+                                </h3>
+
+                                <a asp-controller="Livro"
+                                   asp-action="Categoria"
+                                   asp-route-id="@categoria.Id"
+                                   class="categoria-link">
+
+                                    Ver livros
+                                    <i class="bi bi-arrow-right"
+                                       aria-hidden="true"></i>
+                                </a>
+
+                            </div>
+
+                        </article>
+
+                    </div>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="estado-vazio-home">
+                <i class="bi bi-bookmark" aria-hidden="true"></i>
+
+                <p>
+                    As categorias selecionadas para a página inicial
+                    aparecerão aqui.
+                </p>
+            </div>
+        }
+
+    </div>
+</section>
+
+<!-- LIVROS RECENTES -->
+<section class="secao-livros-recentes"
+         id="livros-recentes">
+
+    <div class="container">
+
+        <div class="secao-titulo">
+
+            <h2>
+                Livros recentes
+            </h2>
+
+            <p>
+                Confira os últimos livros adicionados à nossa biblioteca.
+            </p>
+
+        </div>
+
+        @if (livrosRecentes != null && livrosRecentes.Any())
+        {
+            <div class="lista-livros-recentes">
+
+                @foreach (var livro in livrosRecentes)
+                {
+                    <article class="livro-recente">
+
+                        <div class="livro-recente-capa">
+
+                            @if (!string.IsNullOrWhiteSpace(livro.Imagem))
+                            {
+                                <img src="@Url.Content(livro.Imagem)"
+                                     alt="Capa de @livro.Titulo"
+                                     loading="lazy">
+                            }
+                            else
+                            {
+                                <div class="livro-recente-sem-capa">
+                                    <i class="bi bi-book"
+                                       aria-hidden="true"></i>
+
+                                    <span>Sem capa</span>
+                                </div>
+                            }
+
+                        </div>
+
+                        <div class="livro-recente-info">
+
+                            <h3>
+                                @livro.Titulo
+                            </h3>
+
+                            @if (livro.Categoria != null)
+                            {
+                                <span>
+                                    @livro.Categoria.Nome
+                                </span>
+                            }
+
+                            <p>
+                                Publicado em @livro.AnoPublicacao
+                            </p>
+
+                        </div>
+
+                        <a asp-controller="Livro"
+                           asp-action="Details"
+                           asp-route-id="@livro.Id"
+                           class="livro-recente-link">
+
+                            Ver livro
+                            <i class="bi bi-arrow-right"
+                               aria-hidden="true"></i>
+                        </a>
+
+                    </article>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="estado-vazio-home">
+                <i class="bi bi-journal" aria-hidden="true"></i>
+
+                <p>
+                    Ainda não há livros recentes para exibir.
+                </p>
+            </div>
+        }
+
+    </div>
+</section>
+
+<!-- CHAMADA PARA EXPLORAR -->
+<section class="secao-chamada">
+
+    <div class="container">
+
+        <div class="chamada-conteudo">
+
+            <h2>
+                Há mundos inteiros
+                esperando por você.
+            </h2>
+
+            <p>
+                Entre em nossa biblioteca e encontre
+                sua próxima aventura.
+            </p>
+
+            <a asp-controller="Livro"
+               asp-action="Index"
+               class="chamada-btn">
+
+                Explorar livros
+                <i class="bi bi-arrow-right"
+                   aria-hidden="true"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- COMENTÁRIOS DOS LEITORES -->
+<section class="secao-comentarios"
+         id="comentarios">
+
+    <div class="container">
+
+        <div class="secao-titulo">
+
+            <h2>
+                Comentários dos leitores
+            </h2>
+
+            <p>
+                Cada leitura deixa uma história, e cada leitor tem algo a compartilhar.
+            </p>
+
+        </div>
+
+        @if (comentarios != null && comentarios.Any())
+        {
+            <div class="row g-3 g-md-4">
+
+                @foreach (var comentario in comentarios)
+                {
+                    var avatarComentario =
+                        string.IsNullOrWhiteSpace(comentario.Usuario?.Avatar)
+                            ? "duende"
+                            : comentario.Usuario!.Avatar;
+
+                    <div class="col-12 col-md-6 col-lg-4">
+
+                        <article class="comentario-card">
+
+                            <div class="comentario-cabecalho">
+
+                                <img src="@Url.Content($"~/images/avatars/{avatarComentario}.png")"
+                                     alt="Avatar de @(comentario.Usuario?.Nome ?? "Leitor")"
+                                     class="comentario-avatar"
+                                     loading="lazy">
+
+                                <div class="comentario-identidade">
+
+                                    <p class="comentario-autor">
+                                        @(comentario.Usuario?.Nome ?? "Leitor")
+                                    </p>
+
+                                    @if (comentario.Livro != null)
+                                    {
+                                        <p class="comentario-livro">
+                                            Leu: @comentario.Livro.Titulo
+                                        </p>
+                                    }
+
+                                </div>
+
+                            </div>
+
+                            <span class="comentario-aspas"
+                                  aria-hidden="true">”</span>
+
+                            <p class="comentario-texto">
+                                @comentario.Texto
+                            </p>
+
+                        </article>
+
+                    </div>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="comentarios-vazios">
+
+                <i class="bi bi-chat-quote" aria-hidden="true"></i>
+
+                <p>
+                    Ainda não há comentários dos leitores.
+                </p>
+
+            </div>
+        }
+
+    </div>
+</section>
+
+<!-- RODAPÉ-->
+<footer class="biblioteca-footer">
+
+    <div class="container">
+
+        <div class="biblioteca-footer-conteudo">
+
+            <div class="biblioteca-footer-marca">
+
+                <h3>
+                    Refúgio Literário
+                </h3>
+
+                <p>
+                    Um espaço para histórias,
+                    conhecimento e imaginação.
+                </p>
+
+            </div>
+
+            <div class="biblioteca-footer-direitos">
+
+                <p>
+                    © @DateTime.Now.Year Refúgio Literário
+                </p>
+
+                <p>
+                    Todos os direitos reservados.
+                </p>
+
+            </div>
+        </div>
+    </div>
+</footer>

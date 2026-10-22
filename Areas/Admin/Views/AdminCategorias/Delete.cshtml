@@ -1,0 +1,51 @@
+@model Biblioteca.Models.Categoria
+
+@{
+    ViewData["Title"] = "Excluir Categoria";
+}
+
+<div class="container py-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-8">
+
+            <h1 class="mb-4">
+                Excluir Categoria
+            </h1>
+
+            <div class="alert alert-warning">
+
+                <strong>Atenção!</strong>
+
+                <p class="mb-0 mt-2">
+                    Você está prestes a excluir a categoria
+                    <strong>@Model.Nome</strong>.
+                </p>
+
+            </div>
+
+            <form asp-action="Delete"
+                  method="post">
+
+                <input type="hidden"
+                       asp-for="Id" />
+
+                <button type="submit"
+                        class="btn btn-danger">
+                    Excluir
+                </button>
+
+                <a asp-action="Index"
+                   class="btn btn-secondary">
+                    Cancelar
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
